@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { isAuthenticated } from 'services/auth';
 
 import Login from 'views/Login/Login';
+import PacientList from 'views/PacientList/PacientList';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
@@ -19,9 +20,9 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 const Routes = () => (
   <BrowserRouter>
     <Switch>
-      <Route exact path="/" component={() => isAuthenticated() ? <h1>App</h1> : <Login />} />
+      <Route exact path="/" component={() => isAuthenticated() ? <PacientList /> : <Login />} />
       <PrivateRoute path="/other" component={() => <h1>other</h1>} />
-      <Route path="*" component={() => <h1>Page not found</h1>} />
+      <Route path="*" component={() => <h1>404 Page not found</h1>} />
     </Switch>
   </BrowserRouter>
 );

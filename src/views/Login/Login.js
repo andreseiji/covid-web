@@ -10,6 +10,7 @@ import Logo from 'assets/img/logo.svg';
 import './Login.scss';
 
 const Login = ({ history }) => {
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -21,10 +22,14 @@ const Login = ({ history }) => {
     } else {
       setError(null);
       try {
-        const token = await api.post('/auth', { username, password });
+        setLoading(true);
+        const token = await api.post('/authenticate', { username, password });
+        console.log(token);
         await login(token);
         history.replace('/');
+        setLoading(false);
       } catch (err) {
+        console.error(err);
         if (err && err.message && err.message === 'Network Error') {
           setError(err.message);
         } else if (err && err.response && err.response.error) {
@@ -32,6 +37,7 @@ const Login = ({ history }) => {
         } else {
           setError('Erro ao acessar');
         }
+        setLoading(false);
       }
     }
   };
@@ -53,7 +59,7 @@ const Login = ({ history }) => {
         <form onSubmit={handleLogin}>
           <div className="field">
             <p className="control has-icons-left has-icons-right">
-              <input className="input" type="text" placeholder="Nome de usuário" onChange={(e) => setUsername(e.target.value)} />
+              <input className="input" type="text" placeholder="Nome de usuário" onChange={(e) => setUsername(e.target.value)} disabled={loading} />
               <span className="icon is-small is-left">
                 <i className="fas fa-user" />
               </span>
@@ -61,7 +67,7 @@ const Login = ({ history }) => {
           </div>
           <div className="field">
             <p className="control has-icons-left">
-              <input className="input" type="password" placeholder="Senha" onChange={(e) => setPassword(e.target.value)} />
+              <input className="input" type="password" placeholder="Senha" onChange={(e) => setPassword(e.target.value)} disabled={loading} />
               <span className="icon is-small is-left">
                 <i className="fas fa-lock" />
               </span>
@@ -69,7 +75,7 @@ const Login = ({ history }) => {
           </div>
           <div className="field">
             <p className="control">
-              <button type="submit" className="button is-success is-fullwidth">
+              <button type="submit" className="button is-success is-fullwidth" disabled={loading}>
                 Acessar
               </button>
             </p>
