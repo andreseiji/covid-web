@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 
+import { login } from 'services/auth';
+
 import api from 'services/api';
 
 const Login = ({ history }) => {
@@ -15,11 +17,17 @@ const Login = ({ history }) => {
     } else {
       setError(null);
       try {
-        await api.post('/auth', { username, password });
-        history.push('/app');
+        const token = await api.post('/auth', { username, password });
+        await login(token);
+        history.replace('/');
       } catch (err) {
-        setError(err.message);
-        console.error(err);
+        if (err && err.message && err.message === 'Network Error') {
+          setError(err.message);
+        } else if (err && err.response && err.response.error) {
+          setError(err.response.error);
+        } else {
+          setError('Erro ao acessar');
+        }
       }
     }
   };

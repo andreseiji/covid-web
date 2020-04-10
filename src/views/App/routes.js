@@ -19,7 +19,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 const Routes = () => (
   <BrowserRouter>
     <Switch>
-      <Route exact path="/" component={() => <Login />} />
+      <Route exact path="/" component={() => isAuthenticated() ? <h1>App</h1> : <Login />} />
       <PrivateRoute path="/app" component={() => <h1>App</h1>} />
       <Route path="*" component={() => <h1>Page not found</h1>} />
     </Switch>
