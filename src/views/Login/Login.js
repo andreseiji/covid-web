@@ -5,6 +5,10 @@ import { login } from 'services/auth';
 
 import api from 'services/api';
 
+import Logo from 'assets/img/logo.svg';
+
+import './Login.scss';
+
 const Login = ({ history }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -33,16 +37,45 @@ const Login = ({ history }) => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div id="login" className="columns is-centered">
+      <div className="card">
+        <img src={Logo} alt="Covid-19" />
+        <h3 className="title is-3">Casos Covid-19</h3>
+        <h5 className="title is-5">Mogi-Guaçu</h5>
 
-      {error && (<p>{error}</p>)}
+        {error && (
+          <div className="notification is-danger">
+            <button type="button" className="delete" onClick={() => setError(null)} />
+            {error}
+          </div>
+        )}
 
-      <form onSubmit={handleLogin}>
-        <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
-        <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit">Acessar</button>
-      </form>
+        <form onSubmit={handleLogin}>
+          <div className="field">
+            <p className="control has-icons-left has-icons-right">
+              <input className="input" type="text" placeholder="Nome de usuário" onChange={(e) => setUsername(e.target.value)} />
+              <span className="icon is-small is-left">
+                <i className="fas fa-user" />
+              </span>
+            </p>
+          </div>
+          <div className="field">
+            <p className="control has-icons-left">
+              <input className="input" type="password" placeholder="Senha" onChange={(e) => setPassword(e.target.value)} />
+              <span className="icon is-small is-left">
+                <i className="fas fa-lock" />
+              </span>
+            </p>
+          </div>
+          <div className="field">
+            <p className="control">
+              <button type="submit" className="button is-success is-fullwidth">
+                Acessar
+              </button>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
