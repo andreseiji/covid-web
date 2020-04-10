@@ -1,14 +1,6 @@
 import React from 'react';
+import Routes from './routes';
 
-// import { useAuth } from 'hooks/useAuth';
-
-import AuthenticatedApp from 'views/Auth/AuthenticatedApp';
-import UnauthenticatedApp from 'views/Auth/UnauthenticatedApp';
-
-const App = () => {
-  // const user = useAuth();
-  const user = true;
-  return user ? <AuthenticatedApp /> : <UnauthenticatedApp />;
-};
+const App = () => <Routes />;
 
 export default App;
