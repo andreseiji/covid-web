@@ -1,0 +1,17 @@
+{
+  "extends": ["react-app", "airbnb"],
+  "plugins": ["prettier"],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"]
+      }
+    }
+  },
+  "rules": {
+    "no-undef": 0,
+    "comma-dangle": 0,
+    "react/jsx-filename-extension": 0,
+    "react/prop-types": 0
+  }
+}
