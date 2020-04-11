@@ -3,6 +3,8 @@ import { withRouter } from 'react-router-dom';
 
 import api from 'services/api';
 
+import Header from 'components/Header/Header';
+
 import './PacientNew.scss';
 
 const PacientNew = ({ history }) => {
@@ -10,9 +12,12 @@ const PacientNew = ({ history }) => {
   const [error, setError] = useState(null);
 
   return (
-    <div id="pacient-new">
-      <div>Criar Paciente</div>
-    </div>
+    <>
+      <Header />
+      <div id="pacient-new">
+        <div>Criar Paciente</div>
+      </div>
+    </>
   );
 };
 

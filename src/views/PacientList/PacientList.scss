@@ -1,3 +1,33 @@
 #pacient-list {
-  padding: 48px 24px;
+  padding-top: 60px;
+
+  h5 {
+    margin: 0;
+  }
+
+  hr {
+    margin: 10px;
+  }
+
+  form {
+    display: flex;
+    align-items: flex-end;
+
+    .label {
+      margin: 0;
+    }
+
+    .field {
+      margin: 0 4px;
+    }
+  }
+}
+
+.card {
+  margin: 24px 0;
+  padding: 16px;
+}
+
+.table {
+  width: 100%;
 }

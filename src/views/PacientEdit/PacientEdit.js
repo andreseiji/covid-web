@@ -4,6 +4,8 @@ import { withRouter } from 'react-router-dom';
 
 import api from 'services/api';
 
+import Header from 'components/Header/Header';
+
 import './PacientEdit.scss';
 
 const PacientEdit = ({ history }) => {
@@ -37,9 +39,12 @@ const PacientEdit = ({ history }) => {
   }, [id]);
 
   return (
-    <div id="pacient-edit">
-      {loading ? <div>Carregando...</div> : error ? <div>{error}</div> : <div>Detalhes Paciente</div>}
-    </div>
+    <>
+      <Header />
+      <div id="pacient-edit">
+        {loading ? <div>Carregando...</div> : error ? <div>{error}</div> : <div>Detalhes Paciente</div>}
+      </div>
+    </>
   );
 };
 

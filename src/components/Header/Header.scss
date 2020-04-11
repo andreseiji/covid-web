@@ -1,14 +1,17 @@
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
 #header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: white;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 60px;
-  z-index: 1000;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.05);;
 
   a {

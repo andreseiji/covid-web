@@ -58,7 +58,7 @@ const Login = ({ history }) => {
 
         <form onSubmit={handleLogin}>
           <div className="field">
-            <p className="control has-icons-left has-icons-right">
+            <p className="control has-icons-left">
               <input className="input" type="text" placeholder="Nome de usuário" onChange={(e) => setUsername(e.target.value)} disabled={loading} />
               <span className="icon is-small is-left">
                 <i className="fas fa-user" />
