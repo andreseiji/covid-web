@@ -5,6 +5,10 @@ import { isAuthenticated } from 'services/auth';
 
 import Login from 'views/Login/Login';
 import PacientList from 'views/PacientList/PacientList';
+import PacientDetails from 'views/PacientDetails/PacientDetails';
+import PacientNew from 'views/PacientNew/PacientNew';
+import PacientEdit from 'views/PacientEdit/PacientEdit';
+import NotFound from 'views/NotFound/NotFound';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
@@ -21,8 +25,10 @@ const Routes = () => (
   <BrowserRouter>
     <Switch>
       <Route exact path="/" component={() => isAuthenticated() ? <PacientList /> : <Login />} />
-      <PrivateRoute path="/other" component={() => <h1>other</h1>} />
-      <Route path="*" component={() => <h1>404 Page not found</h1>} />
+      <PrivateRoute exact path="/pacient/:id" component={() => <PacientDetails />} />
+      <PrivateRoute exact path="/new-pacient" component={() => <PacientNew />} />
+      <PrivateRoute exact path="/pacient/:id/edit" component={() => <PacientEdit />} />
+      <Route path="*" component={() => <NotFound />} />
     </Switch>
   </BrowserRouter>
 );
