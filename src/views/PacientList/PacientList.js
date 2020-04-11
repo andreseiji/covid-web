@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import api from 'services/api';
 
 import Loading from 'components/Loading/Loading';
+import Header from 'components/Header/Header';
 
 import './PacientList.scss';
 
@@ -36,10 +37,12 @@ const PacientList = ({ history }) => {
   }, []);
 
   return (
-    <div id="pacient-list">
-      {/* {loading ? <div>Carregando...</div> : error ? <div>{error}</div> : <div>Pacientes</div>} */}
-      <Loading />
-    </div>
+    <>
+      <Header />
+      <div id="pacient-list">
+        {/* {loading ? <Loading /> : error ? <div>{error}</div> : <div>Pacientes</div>} */}
+      </div>
+    </>
   );
 };
 
