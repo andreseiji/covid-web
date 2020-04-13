@@ -5,6 +5,8 @@ import { login } from 'services/auth';
 
 import api from 'services/api';
 
+import Loading from 'components/Loading/Loading';
+
 import Logo from 'assets/img/logo.svg';
 
 import './Login.scss';
@@ -23,17 +25,15 @@ const Login = ({ history }) => {
       setError(null);
       try {
         setLoading(true);
-        const token = await api.post('/authenticate', { username, password });
-        console.log(token);
-        await login(token);
+        const res = await api.post('/authenticate', { user: { username, password } });
+        await login(res.data.accessToken);
         history.replace('/');
-        setLoading(false);
       } catch (err) {
-        console.error(err);
         if (err && err.message && err.message === 'Network Error') {
-          setError(err.message);
-        } else if (err && err.response && err.response.error) {
-          setError(err.response.error);
+          setError('Erro de conexão');
+        } else if (err && err.response && err.response.data && err.response.data.statusCode
+            && (err.response.data.statusCode === 401 || err.response.data.statusCode === 404)) {
+          setError('Credenciais inválidas');
         } else {
           setError('Erro ao acessar');
         }
@@ -44,6 +44,7 @@ const Login = ({ history }) => {
 
   return (
     <div id="login" className="columns is-centered">
+      {loading && <Loading />}
       <div className="card">
         <img src={Logo} alt="Covid-19" />
         <h3 className="title is-3">Casos Covid-19</h3>

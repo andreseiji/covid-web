@@ -3,8 +3,8 @@ import { withRouter } from 'react-router-dom';
 
 import api from 'services/api';
 
-import Loading from 'components/Loading/Loading';
 import Header from 'components/Header/Header';
+import Loading from 'components/Loading/Loading';
 
 import './PacientList.scss';
 
@@ -50,8 +50,8 @@ const PacientList = ({ history }) => {
   return (
     <>
       <Header />
+      {loading && <Loading />}
       <div id="pacient-list" className="container">
-        {/* {loading ? <Loading /> : error ? <div>{error}</div> : <div>Pacientes</div>} */}
         <div className="filters card">
           <h5 className="title is-5">Pacientes</h5>
           <hr />
@@ -96,6 +96,13 @@ const PacientList = ({ history }) => {
           </form>
         </div>
         <div className="pacient-list card">
+          {error && (
+            <div className="notification is-danger">
+              <button type="button" className="delete" onClick={() => setError(null)} />
+              {error}
+            </div>
+          )}
+          { pacients }
           <table className="table">
             <thead>
               <tr>
@@ -107,13 +114,6 @@ const PacientList = ({ history }) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>350.799.198-50</td>
-                <td>André Seiji Tamanaha</td>
-                <td>Hospital Brasil</td>
-                <td>08/07/1992</td>
-                <td>10/04/2020</td>
-              </tr>
               <tr>
                 <td>350.799.198-50</td>
                 <td>André Seiji Tamanaha</td>

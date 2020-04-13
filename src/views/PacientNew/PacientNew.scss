@@ -1,3 +1,23 @@
 #pacient-new {
   padding-top: 60px;
+
+  h3 {
+    margin: 0;
+  }
+
+  hr {
+    margin: 10px 0; 
+  }
+
+  form {
+    .button-container {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.card {
+  margin: 24px 0;
+  padding: 16px;
 }

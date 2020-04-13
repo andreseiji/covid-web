@@ -46,6 +46,11 @@
     border-bottom: solid 2px transparent;
 
     &:hover {
+      color: darken(#2D9CDB, 10%);
+      border-bottom: solid 2px darken(#2D9CDB, 10%);
+    }
+
+    &.is-active {
       color: #2D9CDB;
       border-bottom: solid 2px #2D9CDB;
     }

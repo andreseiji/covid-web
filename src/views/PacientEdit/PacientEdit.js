@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import api from 'services/api';
 
 import Header from 'components/Header/Header';
+import Loading from 'components/Loading/Loading';
 
 import './PacientEdit.scss';
 
@@ -41,8 +42,24 @@ const PacientEdit = ({ history }) => {
   return (
     <>
       <Header />
+      {loading && <Loading />}
       <div id="pacient-edit">
-        {loading ? <div>Carregando...</div> : error ? <div>{error}</div> : <div>Detalhes Paciente</div>}
+        <div id="pacient-details" className="container">
+          <div className="card">
+            <h3 className="title is-3">Detalhes do Paciente</h3>
+            <hr />
+            {error && (
+              <div className="notification is-danger">
+                <button type="button" className="delete" onClick={() => setError(null)} />
+                {error}
+              </div>
+            )}
+            {pacient}
+            <button type="submit" className="button is-primary" onClick={() => { history.push(`/pacient/${id}/edit`); }}>
+              Editar paciente
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

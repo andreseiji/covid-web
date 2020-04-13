@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter, Link, NavLink } from 'react-router-dom';
 
 import { logout } from 'services/auth';
 
@@ -26,8 +26,8 @@ const Header = ({ history }) => {
             Covid-19
           </span>
         </Link>
-        <Link className="link-item" to="/">Pacientes</Link>
-        <Link className="link-item" to="/new-pacient">Novo paciente</Link>
+        <NavLink className="link-item" activeClassName="is-active" to="/" exact>Pacientes</NavLink>
+        <NavLink className="link-item" activeClassName="is-active" to="/new-pacient">Novo paciente</NavLink>
         <span style={{ flex: 1 }} />
         <button
           type="button"
