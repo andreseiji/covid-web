@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter, useLocation, Link } from 'react-router-dom';
 
+import * as moment from 'moment';
+
 import api from 'services/api';
 
 import Header from 'components/Header/Header';
@@ -151,7 +153,7 @@ const PacientList = ({ history }) => {
                     <td>{pacient.cpf}</td>
                     <td>{pacient.name}</td>
                     <td>{pacient.reference_unit}</td>
-                    <td>{pacient.notification_date}</td>
+                    <td>{moment(pacient.notification_date).format('DD/MM/YYYY')}</td>
                   </tr>
                 ))}
               </tbody>
