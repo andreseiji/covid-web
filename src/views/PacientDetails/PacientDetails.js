@@ -20,14 +20,15 @@ const PacientDetails = ({ history }) => {
     const fetchPacient = async () => {
       try {
         setLoading(true);
-        const res = await api.get(`/pacient/list/${id}`);
-        console.log(res);
-        setPacient(res);
+        const res = await api.get(`/pacient/${id}`);
+        setPacient(res.data);
         setLoading(false);
       } catch (err) {
-        console.error(err);
         if (err && err.message && err.message === 'Network Error') {
           setError(err.message);
+        } else if (err && err.response && err.response.status
+            && (err.response.status === 404 || err.response.status === 409)) {
+          history.push('/404');
         } else if (err && err.response && err.response.error) {
           setError(err.response.error);
         } else {
@@ -37,6 +38,7 @@ const PacientDetails = ({ history }) => {
       }
     };
     fetchPacient();
+    // eslint-disable-next-line
   }, [id]);
 
   return (
@@ -45,7 +47,12 @@ const PacientDetails = ({ history }) => {
       {loading && <Loading />}
       <div id="pacient-details" className="container">
         <div className="card">
-          <h3 className="title is-3">Detalhes do Paciente</h3>
+          <div className="title-action">
+            <h3 className="title is-3">Detalhes do Paciente</h3>
+            <button type="submit" className="button is-primary" onClick={() => { history.push(`/pacient/${id}/edit`); }}>
+              Editar paciente
+            </button>
+          </div>
           <hr />
           {error && (
             <div className="notification is-danger">
@@ -53,10 +60,7 @@ const PacientDetails = ({ history }) => {
               {error}
             </div>
           )}
-          {pacient}
-          <button type="submit" className="button is-primary" onClick={() => { history.push(`/pacient/${id}/edit`); }}>
-            Editar paciente
-          </button>
+          {pacient.cpf}
         </div>
       </div>
     </>
