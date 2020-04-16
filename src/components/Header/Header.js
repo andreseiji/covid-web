@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { withRouter, Link, NavLink } from 'react-router-dom';
+import { withRouter, useLocation, Link, NavLink } from 'react-router-dom';
 
 import { logout } from 'services/auth';
 
@@ -8,6 +8,9 @@ import Logo from 'assets/img/logo.svg';
 import './Header.scss';
 
 const Header = ({ history }) => {
+  const useQuery = () => new URLSearchParams(useLocation().search);
+  const query = useQuery();
+
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleLogout = () => {
@@ -15,10 +18,24 @@ const Header = ({ history }) => {
     history.replace('/');
   };
 
+  const getQueryParams = () => {
+    let queryParams = '';
+    const page = query.get('page');
+    const order = query.get('orderBy');
+    if (page && order) {
+      queryParams = `?page=${page}&orderBy=${order}`;
+    } else if (page) {
+      queryParams = `?page=${page}`;
+    } else if (order) {
+      queryParams = `?orderBy=${order}`;
+    }
+    return queryParams;
+  };
+
   return (
     <div className="header-container">
       <div id="header">
-        <Link className="logo" to="/">
+        <Link className="logo" to={{ pathname: '/', search: getQueryParams() }}>
           <img src={Logo} alt="Covid-19" />
           <span>
             Casos
@@ -26,7 +43,7 @@ const Header = ({ history }) => {
             Covid-19
           </span>
         </Link>
-        <NavLink className="link-item" activeClassName="is-active" to="/" exact>Pacientes</NavLink>
+        <NavLink className="link-item" activeClassName="is-active" to={{ pathname: '/', search: getQueryParams() }} exact>Pacientes</NavLink>
         <NavLink className="link-item" activeClassName="is-active" to="/new-pacient">Novo paciente</NavLink>
         <span style={{ flex: 1 }} />
         <button

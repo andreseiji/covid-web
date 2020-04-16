@@ -1,24 +1,39 @@
 #pacient-list {
   padding-top: 60px;
 
-  h5 {
+  h3 {
     margin: 0;
+  }
+
+  h6 {
+    margin-top: 8px;
+    font-weight: 400;
   }
 
   hr {
     margin: 10px 0;
   }
-
-  form {
+  
+  .filters {
     display: flex;
-    align-items: flex-end;
-
-    .label {
-      margin: 0;
-    }
+    justify-content: space-between;
 
     .field {
-      margin: 0 4px;
+      display: flex;
+      justify-content: flex-end;
+      flex: 1;
+    }
+
+    .field-label {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .field-body {
+      display: flex;
+      align-items: center;
+      flex-grow: 0;
     }
   }
 }
@@ -30,4 +45,13 @@
 
 .table {
   width: 100%;
+}
+
+.pacient-link {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #2D9CDB;
+    color: white;
+  }
 }
