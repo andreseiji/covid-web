@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { withRouter } from 'react-router-dom';
 
+import * as moment from 'moment';
+
 import api from 'services/api';
 
 import Header from 'components/Header/Header';
