@@ -5,6 +5,10 @@
     display: flex;
     justify-content: space-between;
 
+    button:last-child {
+      margin-left: 16px;
+    }
+
     h3 {
       margin: 0;
     }
@@ -17,5 +21,13 @@
   .card {
     margin: 24px 0;
     padding: 16px;
+  }
+
+  .pacient-details {
+    label {
+      font-weight: 500;
+      font-size: 14px;
+      color: #888;
+    }
   }
 }
