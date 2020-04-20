@@ -467,7 +467,7 @@ const PacientDetails = ({ history }) => {
                 </div>
                 <div className="column">
                   <label>Complemento</label>
-                  <p>{pacient.address.complement === 'null' || !pacient.address.complement ? 'Não informado' : null}</p>
+                  <p>{pacient.address.complement === 'null' || !pacient.address.complement ? 'Não informado' : pacient.address.complement}</p>
                 </div>
                 <div className="column">
                   <label>Bairro</label>

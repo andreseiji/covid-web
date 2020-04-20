@@ -176,11 +176,13 @@ const PacientNew = ({ history }) => {
       } catch (err) {
         if (err && err.message && err.message === 'Network Error') {
           setError('Erro de conexão');
+          window.scrollTo(0, 0);
         } else if (err && err.response && err.response.status
             && (err.response.status === 401 || err.response.status === 403)) {
           history.push('/');
         } else {
           setError('Erro ao criar paciente');
+          window.scrollTo(0, 0);
         }
         setLoading(false);
       }

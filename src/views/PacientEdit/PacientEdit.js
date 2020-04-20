@@ -113,7 +113,6 @@ const PacientEdit = ({ history }) => {
   const [birth_date, setBirthdate] = useState(null);
   const [address, setAddress] = useState({});
   const [reports, setReports] = useState([]);
-  const [currentReports, setCurrentReports] = useState([]);
 
   useEffect(() => {
     const fetchPacient = async () => {
@@ -130,18 +129,20 @@ const PacientEdit = ({ history }) => {
         if (res.data.address.complement === 'null') res.data.address.complement = null;
         setAddress(res.data.address);
         setReports(res.data.reports);
-        setCurrentReports(res.data.reports);
         setLoading(false);
       } catch (err) {
         if (err && err.message && err.message === 'Network Error') {
           setError(err.message);
+          window.scrollTo(0, 0);
         } else if (err && err.response && err.response.status
             && (err.response.status === 404 || err.response.status === 409)) {
           history.push('/404');
         } else if (err && err.response && err.response.error) {
           setError(err.response.error);
+          window.scrollTo(0, 0);
         } else {
           setError('Erro ao obter paciente');
+          window.scrollTo(0, 0);
         }
         setLoading(false);
       }
@@ -221,48 +222,95 @@ const PacientEdit = ({ history }) => {
   };
 
   const handleSituation = (value, id) => {
-    // if (!currentSituations.includes(value)) {
-    //   const newArr = [...currentSituations];
-    //   newArr.push(value);
-    //   setCurrentSituations(newArr);
-    // } else {
-    //   const newArr = currentSituations.filter((v) => v !== value);
-    //   setCurrentSituations(newArr);
-    // }
+    const newReports = [...reports];
+    newReports.forEach((data) => {
+      if (data.report.report_ID === id) {
+        const items = data.report.situation.split(',');
+        if (!items.includes(value)) {
+          const newArr = [...items];
+          newArr.push(value);
+          data.report.situation = newArr.join();
+        } else {
+          const newArr = items.filter((v) => v !== value);
+          data.report.situation = newArr.join();
+        }
+      }
+    });
+    setReports(newReports);
   };
 
   const handleComorbidity = (value, id) => {
-    // if (!currentComorbidities.includes(value)) {
-    //   const newArr = [...currentComorbidities];
-    //   newArr.push(value);
-    //   setCurrentComorbidities(newArr);
-    // } else {
-    //   const newArr = currentComorbidities.filter((v) => v !== value);
-    //   setCurrentComorbidities(newArr);
-    // }
+    const newReports = [...reports];
+    newReports.forEach((data) => {
+      if (data.report.report_ID === id) {
+        const items = data.report.comorbidity.split(',');
+        if (!items.includes(value)) {
+          const newArr = [...items];
+          newArr.push(value);
+          data.report.comorbidity = newArr.join();
+        } else {
+          const newArr = items.filter((v) => v !== value);
+          data.report.comorbidity = newArr.join();
+        }
+      }
+    });
+    setReports(newReports);
   };
 
   const handleSymptom = (value, id) => {
-    // if (!currentSymptoms.includes(value)) {
-    //   const newArr = [...currentSymptoms];
-    //   newArr.push(value);
-    //   setCurrentSymptons(newArr);
-    // } else {
-    //   const newArr = currentSymptoms.filter((v) => v !== value);
-    //   setCurrentSymptons(newArr);
-    // }
+    const newReports = [...reports];
+    newReports.forEach((data) => {
+      if (data.report.report_ID === id) {
+        const items = data.report.symptoms.map((s) => (s.name));
+        if (!items.includes(value)) {
+          const newArr = [...items];
+          newArr.push(value);
+          data.report.symptoms = newArr.map((s) => ({ name: s }));
+        } else {
+          const newArr = items.filter((v) => v !== value);
+          data.report.symptoms = newArr.map((s) => ({ name: s }));
+        }
+      }
+    });
+    setReports(newReports);
   };
 
   const reportSituation = (value, id) => {
-    return false;
+    let ret = false;
+    reports.forEach((data) => {
+      if (data.report.report_ID === id) {
+        const items = data.report.situation.split(',');
+        items.forEach((item) => {
+          if (item === value) ret = true;
+        });
+      }
+    });
+    return ret;
   };
 
   const reportComorbidity = (value, id) => {
-    return false;
+    let ret = false;
+    reports.forEach((data) => {
+      if (data.report.report_ID === id) {
+        const items = data.report.comorbidity.split(',');
+        items.forEach((item) => {
+          if (item === value) ret = true;
+        });
+      }
+    });
+    return ret;
   };
 
   const reportSymptom = (value, id) => {
-    return false;
+    let ret = false;
+    reports.forEach((data) => {
+      if (data.report.report_ID === id) {
+        data.report.symptoms.forEach((item) => {
+          if (item.name === value) ret = true;
+        });
+      }
+    });
+    return ret;
   };
 
   return (
@@ -554,7 +602,7 @@ const PacientEdit = ({ history }) => {
                     <label className="label">Situação</label>
                     <div className="choice-group">
                       {situations.map((situation) => (
-                        <button key={situation} type="button" className={`choice ${reportSituation(situation, id) ? 'active' : null}`} onClick={() => handleSituation(situation, data.report.report_ID)}>{situation}</button>
+                        <button key={situation} type="button" className={`choice ${reportSituation(situation, data.report.report_ID) ? 'active' : null}`} onClick={() => handleSituation(situation, data.report.report_ID)}>{situation}</button>
                       ))}
                     </div>
                   </div>
@@ -564,7 +612,7 @@ const PacientEdit = ({ history }) => {
                     <label className="label">Comorbidade</label>
                     <div className="choice-group">
                       {comorbidities.map((comorbidity) => (
-                        <button key={comorbidity} type="button" className={`choice ${reportComorbidity(comorbidity, id) ? 'active' : null}`} onClick={() => handleComorbidity(comorbidity, data.report.report_ID)}>{comorbidity}</button>
+                        <button key={comorbidity} type="button" className={`choice ${reportComorbidity(comorbidity, data.report.report_ID) ? 'active' : null}`} onClick={() => handleComorbidity(comorbidity, data.report.report_ID)}>{comorbidity}</button>
                       ))}
                     </div>
                   </div>
@@ -574,7 +622,7 @@ const PacientEdit = ({ history }) => {
                     <label className="label">Sintomas*</label>
                     <div className="choice-group">
                       {symptoms.map((symptom) => (
-                        <button key={symptom} type="button" className={`choice ${reportSymptom(symptom, id) ? 'active' : null}`} onClick={() => handleSymptom(symptom, data.report.report_ID)}>{symptom}</button>
+                        <button key={symptom} type="button" className={`choice ${reportSymptom(symptom, data.report.report_ID) ? 'active' : null}`} onClick={() => handleSymptom(symptom, data.report.report_ID)}>{symptom}</button>
                       ))}
                     </div>
                   </div>
