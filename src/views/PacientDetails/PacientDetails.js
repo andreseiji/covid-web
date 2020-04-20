@@ -139,6 +139,27 @@ const PacientDetails = ({ history }) => {
     }
   };
 
+  const fetchPacient = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(`/pacient/${id}`);
+      setPacient(res.data);
+      setLoading(false);
+    } catch (err) {
+      if (err && err.message && err.message === 'Network Error') {
+        setError(err.message);
+      } else if (err && err.response && err.response.status
+          && (err.response.status === 404 || err.response.status === 409)) {
+        history.push('/404');
+      } else if (err && err.response && err.response.error) {
+        setError(err.response.error);
+      } else {
+        setError('Erro ao obter paciente');
+      }
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorModal(null);
@@ -164,8 +185,10 @@ const PacientDetails = ({ history }) => {
       };
       try {
         setLoading(true);
-        await api.post('/create/report', { payload });
-        history.push(`/pacient/${id}`);
+        await api.post('/create/report', payload);
+        setLoading(false);
+        setModalVisible(false);
+        fetchPacient();
       } catch (err) {
         if (err && err.message && err.message === 'Network Error') {
           setErrorModal('Erro de conexão');
@@ -181,26 +204,6 @@ const PacientDetails = ({ history }) => {
   };
 
   useEffect(() => {
-    const fetchPacient = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get(`/pacient/${id}`);
-        setPacient(res.data);
-        setLoading(false);
-      } catch (err) {
-        if (err && err.message && err.message === 'Network Error') {
-          setError(err.message);
-        } else if (err && err.response && err.response.status
-            && (err.response.status === 404 || err.response.status === 409)) {
-          history.push('/404');
-        } else if (err && err.response && err.response.error) {
-          setError(err.response.error);
-        } else {
-          setError('Erro ao obter paciente');
-        }
-        setLoading(false);
-      }
-    };
     fetchPacient();
     // eslint-disable-next-line
   }, [id]);
