@@ -89,7 +89,6 @@ const PacientEdit = ({ history }) => {
 
   const comorbidities = [
     'Diabetes',
-    'DM',
     'Doença Cardio',
     'Doenças Pulmonares',
     'Hipertenso',

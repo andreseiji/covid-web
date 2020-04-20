@@ -86,7 +86,6 @@ const PacientNew = ({ history }) => {
 
   const comorbidities = [
     'Diabetes',
-    'DM',
     'Doença Cardio',
     'Doenças Pulmonares',
     'Hipertenso',
@@ -128,6 +127,8 @@ const PacientNew = ({ history }) => {
   const [currentSituations, setCurrentSituations] = useState([]);
   const [currentComorbidities, setCurrentComorbidities] = useState([]);
   const [currentSymptoms, setCurrentSymptons] = useState([]);
+  // const [enableOtherComorbidity, setEnableOtherComorbidity] = useState(false);
+  // const [enableOtherSymptom, setEnableOtherSymptom] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
