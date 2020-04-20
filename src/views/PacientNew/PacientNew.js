@@ -15,7 +15,6 @@ import './PacientNew.scss';
 const PacientNew = ({ history }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [errorFields, setErrorFields] = useState([]);
 
   const referenceUnits = [
     'Alto dos Ipês',
@@ -73,16 +72,16 @@ const PacientNew = ({ history }) => {
     'Zona Sul “Valdomiro Girard Jacob”',
   ];
 
-  const symptons = [
+  const symptoms = [
     'Dispneia',
     'Dor de Garganta',
     'Expectoração',
     'Fadiga',
     'Febre',
     'Mialgia',
-    'Outros (TODO: digitado)',
     'Rinorreia',
     'Tosse',
+    'Outros',
   ];
 
   const comorbidities = [
@@ -91,12 +90,12 @@ const PacientNew = ({ history }) => {
     'Doença Cardio',
     'Doenças Pulmonares',
     'Hipertenso',
-    'Outros (digitado)',
+    'Outros',
   ];
 
   const situations = [
     'Agravamento',
-    'Ecaminhado para Hospital (TODO: data)',
+    'Ecaminhado para Hospital',
     'Estável',
     'Intenado',
     'Óbito',
@@ -113,7 +112,7 @@ const PacientNew = ({ history }) => {
     street: null,
     number: null,
     neighborhood: null,
-    // complement: null,
+    complement: null,
     reference_unit: ''
   });
   const [report, setReport] = useState({
@@ -122,15 +121,17 @@ const PacientNew = ({ history }) => {
     symptoms: [],
     covid_exam: false,
     covid_result: '',
-    situation: '',
+    situation: null,
     notification_date: null,
     symptoms_start_date: null
   });
+  const [currentSituations, setCurrentSituations] = useState([]);
+  const [currentComorbidities, setCurrentComorbidities] = useState([]);
+  const [currentSymptoms, setCurrentSymptons] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setErrorFields([]);
     if (
       !cpf
       || !pacientName
@@ -147,29 +148,30 @@ const PacientNew = ({ history }) => {
       || !report.notification_date
       || !report.symptoms_start_date
     ) {
-      const errors = [];
-      if (!cpf) errors.push('cpf');
-      // TODO: all error fields
-      setErrorFields(errors);
       setError('Preencha todos os campos obrigatórios');
       window.scrollTo(0, 0);
     } else {
-      // TODO: other validations
+      const pacient = {
+        cpf,
+        name: pacientName,
+        mother_name: mother_name || null,
+        sex,
+        sex_orientation: sex_orientation || null,
+        phone_number,
+        birth_date: moment(birth_date, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+        address,
+        report: {
+          ...report,
+          comorbidity: currentComorbidities.join(),
+          symptoms: currentSymptoms.map((s) => ({ name: s })),
+          situation: currentSituations.join(),
+          notification_date: moment(report.notification_date, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+          symptoms_start_date: moment(report.symptoms_start_date, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        }
+      };
       try {
         setLoading(true);
-        await api.post('/create/pacient', {
-          pacient: {
-            cpf,
-            name: pacientName,
-            mother_name: mother_name || null,
-            sex,
-            sex_orientation: sex_orientation || null,
-            phone_number,
-            birth_date,
-            address,
-            report
-          }
-        });
+        await api.post('/create/pacient', { pacient });
         history.push(`/pacient/${cpf}`);
       } catch (err) {
         if (err && err.message && err.message === 'Network Error') {
@@ -182,6 +184,39 @@ const PacientNew = ({ history }) => {
         }
         setLoading(false);
       }
+    }
+  };
+
+  const handleSituation = (value) => {
+    if (!currentSituations.includes(value)) {
+      const newArr = [...currentSituations];
+      newArr.push(value);
+      setCurrentSituations(newArr);
+    } else {
+      const newArr = currentSituations.filter((v) => v !== value);
+      setCurrentSituations(newArr);
+    }
+  };
+
+  const handleComorbidity = (value) => {
+    if (!currentComorbidities.includes(value)) {
+      const newArr = [...currentComorbidities];
+      newArr.push(value);
+      setCurrentComorbidities(newArr);
+    } else {
+      const newArr = currentComorbidities.filter((v) => v !== value);
+      setCurrentComorbidities(newArr);
+    }
+  };
+
+  const handleSymptom = (value) => {
+    if (!currentSymptoms.includes(value)) {
+      const newArr = [...currentSymptoms];
+      newArr.push(value);
+      setCurrentSymptons(newArr);
+    } else {
+      const newArr = currentSymptoms.filter((v) => v !== value);
+      setCurrentSymptons(newArr);
     }
   };
 
@@ -205,37 +240,35 @@ const PacientNew = ({ history }) => {
               <div className="field column">
                 <label className="label">CPF*</label>
                 <div className="control">
-                  <InputMask mask="999.999.999-99" className={`input ${errorFields.includes('cpf') ? 'is-danger' : null}`} type="text" onChange={(e) => setCPF(e.target.value)} disabled={loading} />
+                  <InputMask mask="999.999.999-99" className="input" type="text" value={cpf} onChange={(e) => setCPF(e.target.value)} disabled={loading} />
                 </div>
               </div>
               <div className="field column">
                 <label className="label">Nome do paciente*</label>
                 <div className="control">
-                  <input className="input" type="text" onChange={(e) => setPacientName(e.target.value)} disabled={loading} />
+                  <input className="input" type="text" value={pacientName} onChange={(e) => setPacientName(e.target.value)} disabled={loading} />
                 </div>
               </div>
               <div className="field column">
                 <label className="label">Nome da mãe</label>
                 <div className="control">
-                  <input className="input" type="text" onChange={(e) => setMotherName(e.target.value)} disabled={loading} />
+                  <input className="input" type="text" value={mother_name} onChange={(e) => setMotherName(e.target.value)} disabled={loading} />
                 </div>
               </div>
             </div>
             <div className="columns">
-              <div className="field column is-one-third">
+              <div className="field column">
                 <label className="label">Telefone*</label>
                 <div className="control">
-                  <InputMask mask="(99) 999999999" className="input" type="text" onChange={(e) => setPhoneNumber(e.target.value)} disabled={loading} />
+                  <InputMask mask="(99) 999999999" className="input" type="text" value={phone_number} onChange={(e) => setPhoneNumber(e.target.value)} disabled={loading} />
                 </div>
               </div>
-              <div className="field column is-one-third">
+              <div className="field column">
                 <label className="label">Data de nascimento*</label>
                 <div className="control">
-                  <InputMask mask="99/99/9999" className="input" type="text" onChange={(e) => setBirthdate(moment(e.target.value, 'DD/MM/YYYY').format('YYYY-MM-DD'))} disabled={loading} />
+                  <InputMask mask="99/99/9999" className="input" type="text" value={birth_date} onChange={(e) => setBirthdate(e.target.value)} disabled={loading} />
                 </div>
               </div>
-            </div>
-            <div className="columns">
               <div className="field column" style={{ flexGrow: 0 }}>
                 <label className="label">Sexo*</label>
                 <div className="control">
@@ -251,7 +284,7 @@ const PacientNew = ({ history }) => {
               <div className="field column is-one-third">
                 <label className="label">Orientação sexual</label>
                 <div className="control">
-                  <input className="input" type="text" onChange={(e) => setSexOrientation(e.target.value)} disabled={loading} />
+                  <input className="input" type="text" value={sex_orientation} onChange={(e) => setSexOrientation(e.target.value)} disabled={loading} />
                 </div>
               </div>
             </div>
@@ -264,6 +297,7 @@ const PacientNew = ({ history }) => {
                   <input
                     className="input"
                     type="text"
+                    value={address.street}
                     onChange={
                       (e) => {
                         const { value } = e.target;
@@ -283,6 +317,7 @@ const PacientNew = ({ history }) => {
                   <input
                     className="input"
                     type="text"
+                    value={address.number}
                     onChange={
                       (e) => {
                         const { value } = e.target;
@@ -302,6 +337,7 @@ const PacientNew = ({ history }) => {
                   <input
                     className="input"
                     type="text"
+                    value={address.complement}
                     onChange={
                       (e) => {
                         const { value } = e.target;
@@ -321,6 +357,7 @@ const PacientNew = ({ history }) => {
                   <input
                     className="input"
                     type="text"
+                    value={address.neighboorhood}
                     onChange={
                       (e) => {
                         const { value } = e.target;
@@ -361,7 +398,7 @@ const PacientNew = ({ history }) => {
               </div>
             </div>
             <hr />
-            <h4 className="title is-4">Relato</h4>
+            <h4 className="title is-4">Laudo</h4>
             <div className="columns">
               <div className="field column">
                 <label className="label">Origem dos dados*</label>
@@ -393,12 +430,13 @@ const PacientNew = ({ history }) => {
                     mask="99/99/9999"
                     className="input"
                     type="text"
+                    value={report.notification_date}
                     onChange={
                       (e) => {
                         const { value } = e.target;
                         setReport((rep) => ({
                           ...rep,
-                          notification_date: moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD')
+                          notification_date: value
                         }));
                       }
                     }
@@ -413,12 +451,13 @@ const PacientNew = ({ history }) => {
                     mask="99/99/9999"
                     className="input"
                     type="text"
+                    value={report.symptoms_start_date}
                     onChange={
                       (e) => {
                         const { value } = e.target;
                         setReport((rep) => ({
                           ...rep,
-                          symptoms_start_date: moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD')
+                          symptoms_start_date: value
                         }));
                       }
                     }
@@ -482,67 +521,31 @@ const PacientNew = ({ history }) => {
             <div className="columns">
               <div className="field column">
                 <label className="label">Situação</label>
-                <div className="control">
-                  <input
-                    className="input"
-                    type="text"
-                    onChange={
-                      (e) => {
-                        const { value } = e.target;
-                        setReport((rep) => ({
-                          ...rep,
-                          situation: value
-                        }));
-                      }
-                    }
-                    disabled={loading}
-                  />
+                <div className="choice-group">
+                  {situations.map((situation) => (
+                    <button key={situation} type="button" className={`choice ${currentSituations.includes(situation) ? 'active' : null}`} onClick={() => handleSituation(situation)}>{situation}</button>
+                  ))}
                 </div>
-                <p className="help">Separe com vírgulas</p>
               </div>
             </div>
             <div className="columns">
               <div className="field column">
                 <label className="label">Comorbidade</label>
-                <div className="control">
-                  <input
-                    className="input"
-                    type="text"
-                    onChange={
-                      (e) => {
-                        const { value } = e.target;
-                        setReport((rep) => ({
-                          ...rep,
-                          comorbidity: value
-                        }));
-                      }
-                    }
-                    disabled={loading}
-                  />
+                <div className="choice-group">
+                  {comorbidities.map((comorbidity) => (
+                    <button key={comorbidity} type="button" className={`choice ${currentComorbidities.includes(comorbidity) ? 'active' : null}`} onClick={() => handleComorbidity(comorbidity)}>{comorbidity}</button>
+                  ))}
                 </div>
-                <p className="help">Separe com vírgulas</p>
               </div>
             </div>
             <div className="columns">
               <div className="field column">
                 <label className="label">Sintomas*</label>
-                <div className="control">
-                  <input
-                    className="input"
-                    type="text"
-                    onChange={
-                      (e) => {
-                        const { value } = e.target;
-                        setReport((rep) => ({
-                          ...rep,
-                          symptoms: value
-                        }));
-                      }
-                    }
-                    disabled={loading}
-                  />
+                <div className="choice-group">
+                  {symptoms.map((symptom) => (
+                    <button key={symptom} type="button" className={`choice ${currentSymptoms.includes(symptom) ? 'active' : null}`} onClick={() => handleSymptom(symptom)}>{symptom}</button>
+                  ))}
                 </div>
-                <p className="help">Separe com vírgulas</p>
               </div>
             </div>
             <hr />
