@@ -528,7 +528,6 @@ const PacientDetails = ({ history }) => {
                       ))}
                     </div>
                   </div>
-                  <hr />
                 </div>
               ))}
             </div>
