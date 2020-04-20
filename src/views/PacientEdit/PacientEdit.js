@@ -89,7 +89,6 @@ const PacientEdit = ({ history }) => {
 
   const comorbidities = [
     'Diabetes',
-    'DM',
     'Doença Cardio',
     'Doenças Pulmonares',
     'Hipertenso',
@@ -493,7 +492,7 @@ const PacientEdit = ({ history }) => {
             <hr />
             <h4 className="title is-4">Laudos</h4>
             {reports.map((data) => (
-              <div key={data.report.report_ID}>
+              <div key={data.report.report_ID} className="report">
                 <div className="columns">
                   <div className="field column">
                     <label className="label">Origem dos dados*</label>

@@ -86,7 +86,6 @@ const PacientNew = ({ history }) => {
 
   const comorbidities = [
     'Diabetes',
-    'DM',
     'Doença Cardio',
     'Doenças Pulmonares',
     'Hipertenso',
@@ -128,6 +127,8 @@ const PacientNew = ({ history }) => {
   const [currentSituations, setCurrentSituations] = useState([]);
   const [currentComorbidities, setCurrentComorbidities] = useState([]);
   const [currentSymptoms, setCurrentSymptons] = useState([]);
+  // const [enableOtherComorbidity, setEnableOtherComorbidity] = useState(false);
+  // const [enableOtherSymptom, setEnableOtherSymptom] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -399,157 +400,157 @@ const PacientNew = ({ history }) => {
                 </div>
               </div>
             </div>
-            <hr />
-            <h4 className="title is-4">Laudo</h4>
-            <div className="columns">
-              <div className="field column">
-                <label className="label">Origem dos dados*</label>
-                <div className="control">
-                  <div className="select">
-                    <select
-                      value={report.data_origin}
+            <div className="report">
+              <h4 className="title is-4">Laudo</h4>
+              <div className="columns">
+                <div className="field column">
+                  <label className="label">Origem dos dados*</label>
+                  <div className="control">
+                    <div className="select">
+                      <select
+                        value={report.data_origin}
+                        onChange={
+                          (e) => {
+                            const { value } = e.target;
+                            setReport((rep) => ({
+                              ...rep,
+                              data_origin: value
+                            }));
+                          }
+                        }
+                        disabled={loading}
+                      >
+                        <option value="" disabled>Selecione...</option>
+                        {dataOrigin.map((item) => <option key={item} value={item}>{item}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="field column">
+                  <label className="label">Data de notificação*</label>
+                  <div className="control">
+                    <InputMask
+                      mask="99/99/9999"
+                      className="input"
+                      type="text"
+                      value={report.notification_date}
                       onChange={
                         (e) => {
                           const { value } = e.target;
                           setReport((rep) => ({
                             ...rep,
-                            data_origin: value
+                            notification_date: value
                           }));
                         }
                       }
                       disabled={loading}
-                    >
-                      <option value="" disabled>Selecione...</option>
-                      {dataOrigin.map((item) => <option key={item} value={item}>{item}</option>)}
-                    </select>
+                    />
                   </div>
                 </div>
-              </div>
-              <div className="field column">
-                <label className="label">Data de notificação*</label>
-                <div className="control">
-                  <InputMask
-                    mask="99/99/9999"
-                    className="input"
-                    type="text"
-                    value={report.notification_date}
-                    onChange={
-                      (e) => {
-                        const { value } = e.target;
-                        setReport((rep) => ({
-                          ...rep,
-                          notification_date: value
-                        }));
-                      }
-                    }
-                    disabled={loading}
-                  />
-                </div>
-              </div>
-              <div className="field column">
-                <label className="label">Data de início dos sintomas*</label>
-                <div className="control">
-                  <InputMask
-                    mask="99/99/9999"
-                    className="input"
-                    type="text"
-                    value={report.symptoms_start_date}
-                    onChange={
-                      (e) => {
-                        const { value } = e.target;
-                        setReport((rep) => ({
-                          ...rep,
-                          symptoms_start_date: value
-                        }));
-                      }
-                    }
-                    disabled={loading}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="columns">
-              <div className="field column is-2">
-                <label className="label">Exame Covid*</label>
-                <div className="control">
-                  <div className="select">
-                    <select
-                      value={report.covid_exam}
+                <div className="field column">
+                  <label className="label">Data de início dos sintomas*</label>
+                  <div className="control">
+                    <InputMask
+                      mask="99/99/9999"
+                      className="input"
+                      type="text"
+                      value={report.symptoms_start_date}
                       onChange={
                         (e) => {
                           const { value } = e.target;
                           setReport((rep) => ({
                             ...rep,
-                            covid_exam: value
+                            symptoms_start_date: value
                           }));
                         }
                       }
                       disabled={loading}
-                    >
-                      <option value="" disabled>Selecione...</option>
-                      <option value>Sim</option>
-                      <option value={false}>Não</option>
-                    </select>
+                    />
                   </div>
                 </div>
               </div>
-              <div className="field column">
-                <label className="label">Resultado do exame</label>
-                <div className="control">
-                  <div className="select">
-                    <select
-                      value={report.covid_result}
-                      onChange={
-                        (e) => {
-                          const { value } = e.target;
-                          setReport((rep) => ({
-                            ...rep,
-                            covid_result: value
-                          }));
+              <div className="columns">
+                <div className="field column is-2">
+                  <label className="label">Exame Covid*</label>
+                  <div className="control">
+                    <div className="select">
+                      <select
+                        value={report.covid_exam}
+                        onChange={
+                          (e) => {
+                            const { value } = e.target;
+                            setReport((rep) => ({
+                              ...rep,
+                              covid_exam: value
+                            }));
+                          }
                         }
-                      }
-                      disabled={loading || !report.covid_exam}
-                    >
-                      <option value="" disabled>Selecione...</option>
-                      <option value="Positivo">Positivo</option>
-                      <option value="Negativo">Negativo</option>
-                      <option value="Aguardando">Aguardando</option>
-                    </select>
+                        disabled={loading}
+                      >
+                        <option value="" disabled>Selecione...</option>
+                        <option value>Sim</option>
+                        <option value={false}>Não</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="field column">
+                  <label className="label">Resultado do exame</label>
+                  <div className="control">
+                    <div className="select">
+                      <select
+                        value={report.covid_result}
+                        onChange={
+                          (e) => {
+                            const { value } = e.target;
+                            setReport((rep) => ({
+                              ...rep,
+                              covid_result: value
+                            }));
+                          }
+                        }
+                        disabled={loading || !report.covid_exam}
+                      >
+                        <option value="" disabled>Selecione...</option>
+                        <option value="Positivo">Positivo</option>
+                        <option value="Negativo">Negativo</option>
+                        <option value="Aguardando">Aguardando</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="columns">
+                <div className="field column">
+                  <label className="label">Situação</label>
+                  <div className="choice-group">
+                    {situations.map((situation) => (
+                      <button key={situation} type="button" className={`choice ${currentSituations.includes(situation) ? 'active' : null}`} onClick={() => handleSituation(situation)}>{situation}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="columns">
+                <div className="field column">
+                  <label className="label">Comorbidade</label>
+                  <div className="choice-group">
+                    {comorbidities.map((comorbidity) => (
+                      <button key={comorbidity} type="button" className={`choice ${currentComorbidities.includes(comorbidity) ? 'active' : null}`} onClick={() => handleComorbidity(comorbidity)}>{comorbidity}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="columns">
+                <div className="field column">
+                  <label className="label">Sintomas*</label>
+                  <div className="choice-group">
+                    {symptoms.map((symptom) => (
+                      <button key={symptom} type="button" className={`choice ${currentSymptoms.includes(symptom) ? 'active' : null}`} onClick={() => handleSymptom(symptom)}>{symptom}</button>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="columns">
-              <div className="field column">
-                <label className="label">Situação</label>
-                <div className="choice-group">
-                  {situations.map((situation) => (
-                    <button key={situation} type="button" className={`choice ${currentSituations.includes(situation) ? 'active' : null}`} onClick={() => handleSituation(situation)}>{situation}</button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="columns">
-              <div className="field column">
-                <label className="label">Comorbidade</label>
-                <div className="choice-group">
-                  {comorbidities.map((comorbidity) => (
-                    <button key={comorbidity} type="button" className={`choice ${currentComorbidities.includes(comorbidity) ? 'active' : null}`} onClick={() => handleComorbidity(comorbidity)}>{comorbidity}</button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="columns">
-              <div className="field column">
-                <label className="label">Sintomas*</label>
-                <div className="choice-group">
-                  {symptoms.map((symptom) => (
-                    <button key={symptom} type="button" className={`choice ${currentSymptoms.includes(symptom) ? 'active' : null}`} onClick={() => handleSymptom(symptom)}>{symptom}</button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <hr />
             <div className="field">
               <p className="control button-container">
                 <button type="submit" className="button is-success" disabled={loading}>

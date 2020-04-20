@@ -1,5 +1,6 @@
 #pacient-details {
   padding-top: 60px;
+  padding-bottom: 24px;
 
   .title-action {
     display: flex;
@@ -19,7 +20,7 @@
   }
 
   .card {
-    margin: 24px 0;
+    margin: 24px 0 0;
     padding: 16px;
   }
 
@@ -29,5 +30,38 @@
       font-size: 14px;
       color: #888;
     }
+  }
+
+  .report {
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 16px;
+    margin-bottom: 24px;
+    background-color: #fafafa;
+  
+    .list-item {
+      padding: 8px 0;
+    }
+  }
+}
+
+.choice-group {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.choice {
+  padding: 7px 11px;
+  line-height: 24px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid rgb(219, 219, 219);
+  color: rgb(74, 74, 74);
+  margin-right: 8px;
+  margin-bottom: 12px;
+
+  &.active {
+    color: white;
+    background-color: #2D9CDB;
   }
 }
