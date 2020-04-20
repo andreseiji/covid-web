@@ -455,7 +455,7 @@ const PacientDetails = ({ history }) => {
               <div className="columns">
                 <div className="column">
                   <label>Unidade de Referência</label>
-                  <p>{pacient.address.reference_unit}</p>
+                  <p>{pacient.address.reference_unit || 'Não informado'}</p>
                 </div>
               </div>
               <div className="columns">

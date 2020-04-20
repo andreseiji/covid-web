@@ -162,7 +162,6 @@ const PacientEdit = ({ history }) => {
       || !address.street
       || !address.number
       || !address.neighborhood
-      || !address.reference_unit
     ) {
       setError('Preencha todos os campos obrigatórios');
       window.scrollTo(0, 0);
@@ -466,7 +465,7 @@ const PacientEdit = ({ history }) => {
             </div>
             <div className="columns">
               <div className="field column">
-                <label className="label">Unidade de referência*</label>
+                <label className="label">Unidade de referência (APENAS SECRETARIA DE SAÚDE)</label>
                 <div className="control">
                   <div className="select">
                     <select
@@ -482,7 +481,7 @@ const PacientEdit = ({ history }) => {
                       }
                       disabled={loading}
                     >
-                      <option value="" disabled>Selecione...</option>
+                      <option value="">Selecione...</option>
                       {referenceUnits.map((item) => <option key={item} value={item}>{item}</option>)}
                     </select>
                   </div>
