@@ -97,7 +97,7 @@ const PacientNew = ({ history }) => {
     'Agravamento',
     'Ecaminhado para Hospital',
     'Estável',
-    'Intenado',
+    'Internado',
     'Óbito',
   ];
 
@@ -357,7 +357,7 @@ const PacientNew = ({ history }) => {
                   <input
                     className="input"
                     type="text"
-                    value={address.neighboorhood}
+                    value={address.neighborhood}
                     onChange={
                       (e) => {
                         const { value } = e.target;
@@ -506,7 +506,7 @@ const PacientNew = ({ history }) => {
                           }));
                         }
                       }
-                      disabled={loading}
+                      disabled={loading || !report.covid_exam}
                     >
                       <option value="" disabled>Selecione...</option>
                       <option value="Positivo">Positivo</option>
@@ -517,7 +517,6 @@ const PacientNew = ({ history }) => {
                 </div>
               </div>
             </div>
-            {/* // TODO: multiple selection */}
             <div className="columns">
               <div className="field column">
                 <label className="label">Situação</label>
