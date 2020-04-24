@@ -68,6 +68,20 @@ const PacientEdit = ({ history }) => {
     // eslint-disable-next-line
   }, [id]);
 
+  const validateReportDates = () => {
+    let valid = true;
+    reports.forEach((report) => {
+      if (
+        !moment(birth_date, 'DD/MM/YYYY').isValid()
+        || !moment(report.notification_date, 'DD/MM/YYYY').isValid()
+        || !moment(report.symptoms_start_date, 'DD/MM/YYYY').isValid()
+      ) {
+        valid = false;
+      }
+    });
+    return valid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -82,6 +96,9 @@ const PacientEdit = ({ history }) => {
       || !address.neighborhood
     ) {
       setError('Preencha todos os campos obrigatórios');
+      window.scrollTo(0, 0);
+    } else if (!validateReportDates()) {
+      setError('Uma ou mais datas não são válidas');
       window.scrollTo(0, 0);
     } else {
       const pacient = {

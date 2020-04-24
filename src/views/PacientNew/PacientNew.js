@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import * as moment from 'moment';
 
 import { referenceUnits, dataOrigin, symptoms, comorbidities, situations } from 'data/enums';
+import { validateCPF } from 'data/utils';
 
 import api from 'services/api';
 
@@ -67,6 +68,18 @@ const PacientNew = ({ history }) => {
       || !report.symptoms_start_date
     ) {
       setError('Preencha todos os campos obrigatórios');
+      window.scrollTo(0, 0);
+    } else if (
+      !validateCPF(cpf)
+    ) {
+      setError('CPF inválido');
+      window.scrollTo(0, 0);
+    } else if (
+      !moment(birth_date, 'DD/MM/YYYY').isValid()
+      || !moment(report.notification_date, 'DD/MM/YYYY').isValid()
+      || !moment(report.symptoms_start_date, 'DD/MM/YYYY').isValid()
+    ) {
+      setError('Uma ou mais datas não são válidas');
       window.scrollTo(0, 0);
     } else {
       const pacient = {

@@ -114,6 +114,12 @@ const PacientDetails = ({ history }) => {
       || !report.symptoms_start_date
     ) {
       setErrorModal('Preencha todos os campos obrigatórios');
+    } else if (
+      !moment(report.notification_date, 'DD/MM/YYYY').isValid()
+      || !moment(report.symptoms_start_date, 'DD/MM/YYYY').isValid()
+    ) {
+      setError('Uma ou mais datas não são válidas');
+      window.scrollTo(0, 0);
     } else {
       const payload = {
         cpf: id,
@@ -450,6 +456,9 @@ const PacientDetails = ({ history }) => {
                   <div className="columns">
                     <div className="column">
                       <label>Situação</label>
+                      {!data.report.situation && (
+                        <p>Não informado</p>
+                      )}
                       {data.report.situation.split(',').map((item) => (
                         <span key={uuidv4()} className="list-item">{item}</span>
                       ))}
@@ -458,6 +467,9 @@ const PacientDetails = ({ history }) => {
                   <div className="columns">
                     <div className="column">
                       <label>Comorbidade</label>
+                      {!data.report.comorbidity && (
+                        <p>Não informado</p>
+                      )}
                       {data.report.comorbidity.split(',').map((item) => (
                         <span key={uuidv4()} className="list-item">{item}</span>
                       ))}
