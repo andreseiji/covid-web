@@ -19,7 +19,7 @@ const PacientList = ({ history }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [orderBy, setOrderBy] = useState('notification_date');
 
-  const page_size = 10;
+  const page_size = 50;
 
   const useQuery = () => new URLSearchParams(useLocation().search);
   const query = useQuery();

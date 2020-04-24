@@ -108,7 +108,7 @@ const PacientDetails = ({ history }) => {
     setErrorModal(null);
     if (
       !report.data_origin
-      || !report.symptoms
+      || !report.symptoms || (report.symptoms && !report.symptoms.length)
       || (report.covid_exam && !report.covid_result)
       || !report.notification_date
       || !report.symptoms_start_date
