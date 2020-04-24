@@ -51,9 +51,6 @@ const PacientNew = ({ history }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    console.log('covid_exam', report.covid_exam)
-    console.log('covid_result', report.covid_result)
-    console.log('query', report.covid_exam && report.covid_result !== '')
     if (
       !cpf
       || !pacientName
@@ -64,7 +61,7 @@ const PacientNew = ({ history }) => {
       || !address.number
       || !address.neighborhood
       || !report.data_origin
-      || !report.symptoms || (report.symptoms && !report.symptoms.length)
+      || !report.symptoms || !currentSymptoms.length
       || (report.covid_exam && report.covid_result !== '')
       || !report.notification_date
       || !report.symptoms_start_date
@@ -399,7 +396,7 @@ const PacientNew = ({ history }) => {
                         onChange={
                           (e) => {
                             const { value } = e.target;
-                            if (!value) {
+                            if (!value || value === 'false') {
                               setReport((rep) => ({
                                 ...rep,
                                 covid_result: ''
@@ -435,7 +432,7 @@ const PacientNew = ({ history }) => {
                             }));
                           }
                         }
-                        disabled={loading || !report.covid_exam}
+                        disabled={loading || !report.covid_exam || report.covid_exam === 'false'}
                       >
                         <option value="" disabled>Selecione...</option>
                         <option value="Positivo">Positivo</option>
