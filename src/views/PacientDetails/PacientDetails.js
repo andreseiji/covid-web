@@ -42,8 +42,8 @@ const PacientDetails = ({ history }) => {
     covid_exam: false,
     covid_result: '',
     situation: null,
-    notification_date: null,
-    symptoms_start_date: null
+    notification_date: '',
+    symptoms_start_date: ''
   });
   const [currentSituations, setCurrentSituations] = useState([]);
   const [currentComorbidities, setCurrentComorbidities] = useState([]);

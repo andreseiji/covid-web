@@ -3,7 +3,11 @@ import { withRouter, useLocation, Link } from 'react-router-dom';
 
 import * as moment from 'moment';
 
+import { referenceUnits } from 'data/enums';
+
 import api from 'services/api';
+
+import InputMask from 'react-input-mask';
 
 import Header from 'components/Header/Header';
 import Loading from 'components/Loading/Loading';
@@ -18,6 +22,13 @@ const PacientList = ({ history }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [orderBy, setOrderBy] = useState('notification_date');
+  const [cpf, setCPF] = useState('');
+  const [pacientName, setPacientName] = useState('');
+  const [notification, setNotification] = useState('');
+  const [symptomsStart, setSymptomsStart] = useState('');
+  const [notification_date, setNotificationDate] = useState('');
+  const [symptoms_start_date, setSymptomsStartDate] = useState('');
+  const [unit, setUnit] = useState('');
 
   const page_size = 50;
 
@@ -34,7 +45,16 @@ const PacientList = ({ history }) => {
       setLoading(true);
       const res = await api.post('/pacient/list', {
         list: {
-          page_index: page || 1, page_size, order_by: order || 'notification_date'
+          page_index: page || 1,
+          page_size,
+          order_by: order || 'notification_date',
+          // filter_by: {
+          //   cpf,
+          //   name: pacientName,
+          //   notification_date,
+          //   symptoms_start_date,
+          //   reference_unit: unit
+          // }
         }
       });
       setPacients(res.data.pacients);
@@ -96,6 +116,10 @@ const PacientList = ({ history }) => {
     fetchPacients(value, order);
   };
 
+  const filter = (e) => {
+    e.preventDefault();
+  }
+
   const getInitialPacient = () => (currentPage - 1) * page_size + 1;
 
   const getPagePacient = () => {
@@ -110,26 +134,66 @@ const PacientList = ({ history }) => {
       {totalPacients && (
         <div id="pacient-list" className="container">
           <div className="filters card">
-            <div>
-              <h3 className="title is-3">Pacientes</h3>
-              <h6 className="title is-6">
-                {`Mostrando pacientes ${getInitialPacient()} - ${getPagePacient()} de ${totalPacients}`}
-              </h6>
-            </div>
-            <div className="field is-horizontal">
-              <div className="field-label">Ordenar por:</div>
-              <div className="field-body">
-                <div className="select">
-                  <select value={orderBy} onChange={(e) => handleOrderBy(e.target.value)}>
-                    <option value="notification_date">Data de Notificação</option>
-                    <option value="symptoms_start_date">Início dos Sintomas</option>
-                    <option value="cpf">CPF</option>
-                    <option value="name">Nome</option>
-                    <option value="reference_unit">Unidade de Referência</option>
-                  </select>
+            <div className="row">
+              <div>
+                <h3 className="title is-3">Pacientes</h3>
+                <h6 className="title is-6">
+                  {`Mostrando pacientes ${getInitialPacient()} - ${getPagePacient()} de ${totalPacients}`}
+                </h6>
+              </div>
+              <div className="field is-horizontal">
+                <div className="field-label">Ordenar por:</div>
+                <div className="field-body">
+                  <div className="select">
+                    <select value={orderBy} onChange={(e) => handleOrderBy(e.target.value)}>
+                      <option value="notification_date">Data de Notificação</option>
+                      <option value="symptoms_start_date">Início dos Sintomas</option>
+                      <option value="cpf">CPF</option>
+                      <option value="name">Nome</option>
+                      <option value="reference_unit">Unidade de Referência</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
+            <form className="row" onSubmit={e => filter(e)}>
+              <div className="field column">
+                <label className="label">CPF</label>
+                <input className="input" type="text" value={cpf} onChange={(e) => setCPF(e.target.value)} disabled={loading} />
+              </div>
+              <div className="field column">
+                <label className="label">Nome</label>
+                <input className="input" type="text" value={pacientName} onChange={(e) => setPacientName(e.target.value)} disabled={loading} />
+              </div>
+              <div className="field column">
+                <label className="label">Notificação</label>
+                <InputMask mask="99/99/9999" className="input" type="text" value={notification} onChange={(e) => setNotification(e.target.value)} disabled={loading} />
+              </div>
+              <div className="field column">
+                <label className="label">Sintomas</label>
+                <InputMask mask="99/99/9999" className="input" type="text" value={symptomsStart} onChange={(e) => setSymptomsStart(e.target.value)} disabled={loading} />
+                </div>
+              <div className="field column">
+                <label className="label">Unidade de referência</label>
+                <div className="select">
+                  <select
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value)}
+                    disabled={loading}
+                  >
+                    <option value="">Selecione...</option>
+                    {referenceUnits.map((item) => <option key={item} value={item}>{item}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="field column">
+                <p className="control button-container">
+                  <button type="submit" className="button is-success is-fullwidth" disabled={loading}>
+                    Filtrar
+                  </button>
+                </p>
+              </div>
+            </form>
           </div>
           <div className="pacient-list card">
             {error && (

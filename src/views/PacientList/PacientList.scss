@@ -16,12 +16,26 @@
   
   .filters {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+
+    .row, form {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    form {
+      margin-top: 10px;
+    }
 
     .field {
       display: flex;
       justify-content: flex-end;
       flex: 1;
+
+      &.column {
+        flex-direction: column;
+        margin-bottom: 0;
+      }
     }
 
     .field-label {
