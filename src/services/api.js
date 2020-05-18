@@ -2,8 +2,8 @@ import axios from 'axios';
 import { getToken, logout } from 'services/auth';
 
 const api = axios.create({
-  // baseURL: 'http://guacu.casoscovid.com.br:8080'
-  baseURL: 'http://guacu.casoscovid.com.br:8090'
+  baseURL: 'http://guacu.casoscovid.com.br:8080'
+  // baseURL: 'http://guacu.casoscovid.com.br:8090'
 });
 
 api.interceptors.request.use(async (config) => {
