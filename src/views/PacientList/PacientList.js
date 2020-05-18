@@ -122,6 +122,7 @@ const PacientList = ({ history }) => {
                 <div className="select">
                   <select value={orderBy} onChange={(e) => handleOrderBy(e.target.value)}>
                     <option value="notification_date">Data de Notificação</option>
+                    <option value="symptoms_start_date">Início dos Sintomas</option>
                     <option value="cpf">CPF</option>
                     <option value="name">Nome</option>
                     <option value="reference_unit">Unidade de Referência</option>
