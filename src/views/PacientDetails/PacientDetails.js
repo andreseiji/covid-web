@@ -4,6 +4,8 @@ import { withRouter } from 'react-router-dom';
 
 import * as moment from 'moment';
 
+import { dataOrigin, symptoms, comorbidities, situations } from 'data/enums';
+
 import InputMask from 'react-input-mask';
 
 import api from 'services/api';
@@ -46,64 +48,6 @@ const PacientDetails = ({ history }) => {
   const [currentSituations, setCurrentSituations] = useState([]);
   const [currentComorbidities, setCurrentComorbidities] = useState([]);
   const [currentSymptoms, setCurrentSymptons] = useState([]);
-
-  const dataOrigin = [
-    'Hospital Municipal Tabajara Ramos',
-    'São Francisco',
-    'Santa Casa',
-    'UPA',
-    'Alto dos Ipês',
-    'Centenário',
-    'Centro de Saúde II',
-    'Centro Oeste – “Dr Osvaldo Rangel Cardoso”',
-    'Chácara Alvorada “Maria Nazaré Silva”',
-    'Chaparral',
-    'Eucaliptos',
-    'Fantinato I',
-    'Fantinato II',
-    'Guaçu Mirim “Neuza Thoman  Caveanha”',
-    'Guaçuano',
-    'Hermínio Bueno',
-    'Ipê II',
-    'Ipê Pinheiro',
-    'Martinho Prado  “Dr José Aristodemo Pinotti”',
-    'Rosa Cruz',
-    'Santa Cecília',
-    'Santa Terezinha  “Dr José Lanzi”',
-    'Suécia',
-    'Zaniboni I',
-    'Zaniboni II',
-    'Zona Norte “Pref. Orlando Chiarelli”',
-    'Zona Sul “Valdomiro Girard Jacob”',
-  ];
-
-  const symptoms = [
-    'Dispneia',
-    'Dor de Garganta',
-    'Expectoração',
-    'Fadiga',
-    'Febre',
-    'Mialgia',
-    'Rinorreia',
-    'Tosse',
-    'Outros',
-  ];
-
-  const comorbidities = [
-    'Diabetes',
-    'Doença Cardio',
-    'Doenças Pulmonares',
-    'Hipertenso',
-    'Outros',
-  ];
-
-  const situations = [
-    'Agravamento',
-    'Ecaminhado para Hospital',
-    'Estável',
-    'Internado',
-    'Óbito',
-  ];
 
   const handleSituation = (value) => {
     if (!currentSituations.includes(value)) {
@@ -164,12 +108,18 @@ const PacientDetails = ({ history }) => {
     setErrorModal(null);
     if (
       !report.data_origin
-      || !report.symptoms
+      || !report.symptoms || (report.symptoms && !report.symptoms.length)
       || (report.covid_exam && !report.covid_result)
       || !report.notification_date
       || !report.symptoms_start_date
     ) {
       setErrorModal('Preencha todos os campos obrigatórios');
+    } else if (
+      !moment(report.notification_date, 'DD/MM/YYYY').isValid()
+      || !moment(report.symptoms_start_date, 'DD/MM/YYYY').isValid()
+    ) {
+      setError('Uma ou mais datas não são válidas');
+      window.scrollTo(0, 0);
     } else {
       const payload = {
         cpf: id,
@@ -506,6 +456,9 @@ const PacientDetails = ({ history }) => {
                   <div className="columns">
                     <div className="column">
                       <label>Situação</label>
+                      {!data.report.situation && (
+                        <p>Não informado</p>
+                      )}
                       {data.report.situation.split(',').map((item) => (
                         <span key={uuidv4()} className="list-item">{item}</span>
                       ))}
@@ -514,6 +467,9 @@ const PacientDetails = ({ history }) => {
                   <div className="columns">
                     <div className="column">
                       <label>Comorbidade</label>
+                      {!data.report.comorbidity && (
+                        <p>Não informado</p>
+                      )}
                       {data.report.comorbidity.split(',').map((item) => (
                         <span key={uuidv4()} className="list-item">{item}</span>
                       ))}

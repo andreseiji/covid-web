@@ -19,7 +19,7 @@ const PacientList = ({ history }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [orderBy, setOrderBy] = useState('notification_date');
 
-  const page_size = 10;
+  const page_size = 50;
 
   const useQuery = () => new URLSearchParams(useLocation().search);
   const query = useQuery();
@@ -122,6 +122,7 @@ const PacientList = ({ history }) => {
                 <div className="select">
                   <select value={orderBy} onChange={(e) => handleOrderBy(e.target.value)}>
                     <option value="notification_date">Data de Notificação</option>
+                    <option value="symptoms_start_date">Início dos Sintomas</option>
                     <option value="cpf">CPF</option>
                     <option value="name">Nome</option>
                     <option value="reference_unit">Unidade de Referência</option>
@@ -144,7 +145,9 @@ const PacientList = ({ history }) => {
                   <th><abbr title="Cadastro de Pessoa Física">CPF</abbr></th>
                   <th>Nome</th>
                   <th>Unidade de Referência</th>
-                  <th>Data de Notificação</th>
+                  <th>Início dos Sintomas</th>
+                  <th>Notificação</th>
+                  <th>Tempo desde Notificação</th>
                 </tr>
               </thead>
               <tbody>
@@ -153,7 +156,9 @@ const PacientList = ({ history }) => {
                     <td>{pacient.cpf}</td>
                     <td>{pacient.name}</td>
                     <td>{pacient.reference_unit}</td>
+                    <td>{moment(pacient.symptoms_start_date).format('DD/MM/YYYY')}</td>
                     <td>{moment(pacient.notification_date).format('DD/MM/YYYY')}</td>
+                    <td>{moment(pacient.notification_date).fromNow()}</td>
                   </tr>
                 ))}
               </tbody>

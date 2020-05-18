@@ -36,6 +36,11 @@
     color: rgb(74, 74, 74);
     margin-right: 8px;
     margin-bottom: 12px;
+    cursor: pointer;
+
+    &:hover {
+      border: 1px solid #2D9CDB;
+    }
   
     &.active {
       color: white;

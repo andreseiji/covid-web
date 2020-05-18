@@ -4,6 +4,8 @@ import { withRouter } from 'react-router-dom';
 
 import * as moment from 'moment';
 
+import { referenceUnits, dataOrigin, symptoms, comorbidities, situations } from 'data/enums';
+
 import api from 'services/api';
 
 import InputMask from 'react-input-mask';
@@ -18,90 +20,6 @@ const PacientEdit = ({ history }) => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const referenceUnits = [
-    'Alto dos Ipês',
-    'Centenário',
-    'Centro de Saúde II',
-    'Centro Oeste – “Dr Osvaldo Rangel Cardoso”',
-    'Chácara Alvorada “Maria Nazaré Silva”',
-    'Chaparral',
-    'Eucaliptos',
-    'Fantinato I',
-    'Fantinato II',
-    'Guaçu Mirim “Neuza Thoman  Caveanha”',
-    'Guaçuano',
-    'Hermínio Bueno',
-    'Ipê II',
-    'Ipê Pinheiro',
-    'Martinho Prado  “Dr José Aristodemo Pinotti”',
-    'Rosa Cruz',
-    'Santa Cecília',
-    'Santa Terezinha  “Dr José Lanzi”',
-    'Suécia',
-    'Zaniboni I',
-    'Zaniboni II',
-    'Zona Norte “Pref. Orlando Chiarelli”',
-    'Zona Sul “Valdomiro Girard Jacob”',
-  ];
-
-  const dataOrigin = [
-    'Hospital Municipal Tabajara Ramos',
-    'São Francisco',
-    'Santa Casa',
-    'UPA',
-    'Alto dos Ipês',
-    'Centenário',
-    'Centro de Saúde II',
-    'Centro Oeste – “Dr Osvaldo Rangel Cardoso”',
-    'Chácara Alvorada “Maria Nazaré Silva”',
-    'Chaparral',
-    'Eucaliptos',
-    'Fantinato I',
-    'Fantinato II',
-    'Guaçu Mirim “Neuza Thoman  Caveanha”',
-    'Guaçuano',
-    'Hermínio Bueno',
-    'Ipê II',
-    'Ipê Pinheiro',
-    'Martinho Prado  “Dr José Aristodemo Pinotti”',
-    'Rosa Cruz',
-    'Santa Cecília',
-    'Santa Terezinha  “Dr José Lanzi”',
-    'Suécia',
-    'Zaniboni I',
-    'Zaniboni II',
-    'Zona Norte “Pref. Orlando Chiarelli”',
-    'Zona Sul “Valdomiro Girard Jacob”',
-  ];
-
-  const symptoms = [
-    'Dispneia',
-    'Dor de Garganta',
-    'Expectoração',
-    'Fadiga',
-    'Febre',
-    'Mialgia',
-    'Rinorreia',
-    'Tosse',
-    'Outros',
-  ];
-
-  const comorbidities = [
-    'Diabetes',
-    'Doença Cardio',
-    'Doenças Pulmonares',
-    'Hipertenso',
-    'Outros',
-  ];
-
-  const situations = [
-    'Agravamento',
-    'Ecaminhado para Hospital',
-    'Estável',
-    'Internado',
-    'Óbito',
-  ];
 
   const [cpf, setCPF] = useState(null);
   const [pacientName, setPacientName] = useState(null);
@@ -150,6 +68,20 @@ const PacientEdit = ({ history }) => {
     // eslint-disable-next-line
   }, [id]);
 
+  const validateReportDates = () => {
+    let valid = true;
+    reports.forEach((report) => {
+      if (
+        !moment(birth_date, 'DD/MM/YYYY').isValid()
+        || !moment(report.notification_date, 'DD/MM/YYYY').isValid()
+        || !moment(report.symptoms_start_date, 'DD/MM/YYYY').isValid()
+      ) {
+        valid = false;
+      }
+    });
+    return valid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -164,6 +96,9 @@ const PacientEdit = ({ history }) => {
       || !address.neighborhood
     ) {
       setError('Preencha todos os campos obrigatórios');
+      window.scrollTo(0, 0);
+    } else if (!validateReportDates()) {
+      setError('Uma ou mais datas não são válidas');
       window.scrollTo(0, 0);
     } else {
       const pacient = {
