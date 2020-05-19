@@ -145,20 +145,20 @@ const PacientList = ({ history }) => {
                   <th><abbr title="Cadastro de Pessoa Física">CPF</abbr></th>
                   <th>Nome</th>
                   <th>Unidade de Referência</th>
-                  <th>Início dos Sintomas</th>
+                  <th>Sintomas</th>
                   <th>Notificação</th>
-                  <th>Tempo desde Notificação</th>
+                  <th>Período</th>
                 </tr>
               </thead>
               <tbody>
                 {pacients.map((pacient) => (
                   <tr key={pacient.cpf} className="pacient-link" onClick={() => history.push(`pacient/${pacient.cpf}`)}>
-                    <td>{pacient.cpf}</td>
+                    <td style={{ minWidth: 144 }}>{pacient.cpf}</td>
                     <td>{pacient.name}</td>
                     <td>{pacient.reference_unit}</td>
                     <td>{moment(pacient.symptoms_start_date).format('DD/MM/YYYY')}</td>
                     <td>{moment(pacient.notification_date).format('DD/MM/YYYY')}</td>
-                    <td>{moment(pacient.notification_date).fromNow()}</td>
+                    <td>{moment(pacient.symptoms_start_date).fromNow()}</td>
                   </tr>
                 ))}
               </tbody>
