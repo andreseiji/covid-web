@@ -73,8 +73,8 @@ const PacientEdit = ({ history }) => {
     reports.forEach((report) => {
       if (
         !moment(birth_date, 'DD/MM/YYYY').isValid()
-        || !moment(report.notification_date, 'DD/MM/YYYY').isValid()
-        || !moment(report.symptoms_start_date, 'DD/MM/YYYY').isValid()
+        || !moment(report.report.notification_date).isValid()
+        || !moment(report.report.symptoms_start_date).isValid()
       ) {
         valid = false;
       }
