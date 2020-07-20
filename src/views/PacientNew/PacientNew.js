@@ -365,7 +365,11 @@ const PacientNew = ({ history }) => {
                   </div>
                 </div>
                 <div className="field column">
-                  <label className="label">Data de notificação*</label>
+                  <label className="label">
+                    Data de
+                    {report.new_report ? 'notificação' : 'acompanhamento'}
+                    *
+                  </label>
                   <div className="control">
                     <InputMask
                       mask="99/99/9999"

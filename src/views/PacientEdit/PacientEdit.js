@@ -21,13 +21,13 @@ const PacientEdit = ({ history }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [cpf, setCPF] = useState(null);
-  const [pacientName, setPacientName] = useState(null);
-  const [mother_name, setMotherName] = useState(null);
+  const [cpf, setCPF] = useState('');
+  const [pacientName, setPacientName] = useState('');
+  const [mother_name, setMotherName] = useState('');
   const [sex, setSex] = useState('');
-  const [sex_orientation, setSexOrientation] = useState(null);
-  const [phone_number, setPhoneNumber] = useState(null);
-  const [birth_date, setBirthdate] = useState(null);
+  const [sex_orientation, setSexOrientation] = useState('');
+  const [phone_number, setPhoneNumber] = useState('');
+  const [birth_date, setBirthdate] = useState('');
   const [address, setAddress] = useState({});
   const [reports, setReports] = useState([]);
 
@@ -40,10 +40,10 @@ const PacientEdit = ({ history }) => {
         setPacientName(res.data.name);
         setMotherName(res.data.mother_name);
         setSex(res.data.sex);
-        setSexOrientation(res.data.sex_orientation === 'null' ? null : res.data.sex_orientation);
+        setSexOrientation(res.data.sex_orientation === 'null' ? '' : res.data.sex_orientation);
         setPhoneNumber(res.data.phone_number);
         setBirthdate(moment(res.data.birth_date, 'YYYY-MM-DD').format('DD/MM/YYYY'));
-        if (res.data.address.complement === 'null') res.data.address.complement = null;
+        if (res.data.address.complement === 'null') res.data.address.complement = '';
         setAddress(res.data.address);
         setReports(res.data.reports);
         setLoading(false);
@@ -104,9 +104,9 @@ const PacientEdit = ({ history }) => {
       const pacient = {
         cpf,
         name: pacientName,
-        mother_name: mother_name || null,
+        mother_name: mother_name || '',
         sex,
-        sex_orientation: sex_orientation || null,
+        sex_orientation: sex_orientation || '',
         phone_number,
         birth_date: moment(birth_date, 'DD/MM/YYYY').format('YYYY-MM-DD'),
         address,
@@ -128,6 +128,31 @@ const PacientEdit = ({ history }) => {
         setLoading(false);
       }
     }
+  };
+
+  const comorbiditiesHasOthers = (id) => {
+    let ret = false;
+    reports.forEach((data) => {
+      if (data.report.report_ID === id) {
+        const items = data.report.comorbidity.split(',');
+        items.forEach((item) => {
+          if (item === 'Outros') ret = true;
+        });
+      }
+    });
+    return ret;
+  };
+
+  const symptomsHasOthers = (id) => {
+    let ret = false;
+    reports.forEach((data) => {
+      if (data.report.report_ID === id) {
+        data.report.symptoms.forEach((item) => {
+          if (item.name === 'Outros') ret = true;
+        });
+      }
+    });
+    return ret;
   };
 
   const handleReportChange = (value, field, id) => {
@@ -183,6 +208,7 @@ const PacientEdit = ({ history }) => {
           data.report.comorbidity = newArr.join();
         } else {
           const newArr = items.filter((v) => v !== value);
+          if (value === 'Outros') data.report.other_comorbidities = '';
           data.report.comorbidity = newArr.join();
         }
       }
@@ -201,6 +227,7 @@ const PacientEdit = ({ history }) => {
           data.report.symptoms = newArr.map((s) => ({ name: s }));
         } else {
           const newArr = items.filter((v) => v !== value);
+          if (value === 'Outros') data.report.other_symptoms = '';
           data.report.symptoms = newArr.map((s) => ({ name: s }));
         }
       }
@@ -449,7 +476,11 @@ const PacientEdit = ({ history }) => {
                     </div>
                   </div>
                   <div className="field column">
-                    <label className="label">Data de notificação*</label>
+                    <label className="label">
+                      Data de
+                      {data.report.new_report ? 'notificação' : 'acompanhamento'}
+                      *
+                    </label>
                     <div className="control">
                       <InputMask
                         mask="99/99/9999"
@@ -548,6 +579,25 @@ const PacientEdit = ({ history }) => {
                         <button key={comorbidity} type="button" className={`choice ${reportComorbidity(comorbidity, data.report.report_ID) ? 'active' : null}`} onClick={() => handleComorbidity(comorbidity, data.report.report_ID)}>{comorbidity}</button>
                       ))}
                     </div>
+                    {comorbiditiesHasOthers(data.report.report_ID) && (
+                      <div className="field column">
+                        <label className="label">Outras comorbidades</label>
+                        <div className="control">
+                          <input
+                            className="input"
+                            type="text"
+                            value={data.report.other_comorbidities}
+                            onChange={
+                              (e) => {
+                                const { value } = e.target;
+                                handleReportChange(value, 'other_comorbidities', data.report.report_ID);
+                              }
+                            }
+                            disabled={loading}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="columns">
@@ -558,6 +608,25 @@ const PacientEdit = ({ history }) => {
                         <button key={symptom} type="button" className={`choice ${reportSymptom(symptom, data.report.report_ID) ? 'active' : null}`} onClick={() => handleSymptom(symptom, data.report.report_ID)}>{symptom}</button>
                       ))}
                     </div>
+                    {symptomsHasOthers(data.report.report_ID) && (
+                      <div className="field column">
+                        <label className="label">Outros sintomas</label>
+                        <div className="control">
+                          <input
+                            className="input"
+                            type="text"
+                            value={data.report.other_symptoms}
+                            onChange={
+                              (e) => {
+                                const { value } = e.target;
+                                handleReportChange(value, 'other_symptoms', data.report.report_ID);
+                              }
+                            }
+                            disabled={loading}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -565,6 +634,9 @@ const PacientEdit = ({ history }) => {
             <hr />
             <div className="field">
               <p className="control button-container">
+                <button type="button" className="button" disabled={loading} onClick={() => history.push(`/pacient/${id}`)} style={{ marginRight: 16 }}>
+                  Cancelar
+                </button>
                 <button type="submit" className="button is-success" disabled={loading}>
                   Editar paciente
                 </button>
