@@ -19,35 +19,37 @@ const PacientNew = ({ history }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [cpf, setCPF] = useState(null);
-  const [pacientName, setPacientName] = useState(null);
-  const [mother_name, setMotherName] = useState(null);
+  const [cpf, setCPF] = useState('');
+  const [pacientName, setPacientName] = useState('');
+  const [mother_name, setMotherName] = useState('');
   const [sex, setSex] = useState('');
-  const [sex_orientation, setSexOrientation] = useState(null);
-  const [phone_number, setPhoneNumber] = useState(null);
-  const [birth_date, setBirthdate] = useState(null);
+  const [sex_orientation, setSexOrientation] = useState('');
+  const [phone_number, setPhoneNumber] = useState('');
+  const [birth_date, setBirthdate] = useState('');
   const [address, setAddress] = useState({
-    street: null,
-    number: null,
-    neighborhood: null,
-    complement: null,
+    street: '',
+    number: '',
+    neighborhood: '',
+    complement: '',
     reference_unit: ''
   });
   const [report, setReport] = useState({
     data_origin: '',
-    comorbidity: null,
+    comorbidity: '',
     symptoms: [],
     covid_exam: false,
     covid_result: '',
-    situation: null,
-    notification_date: null,
-    symptoms_start_date: null
+    situation: '',
+    notification_date: '',
+    symptoms_start_date: ''
   });
   const [currentSituations, setCurrentSituations] = useState([]);
   const [currentComorbidities, setCurrentComorbidities] = useState([]);
   const [currentSymptoms, setCurrentSymptons] = useState([]);
-  // const [enableOtherComorbidity, setEnableOtherComorbidity] = useState(false);
-  // const [enableOtherSymptom, setEnableOtherSymptom] = useState(false);
+  const [enableOtherComorbidity, setEnableOtherComorbidity] = useState(false);
+  const [enableOtherSymptom, setEnableOtherSymptom] = useState(false);
+  const [other_comorbidities, setOtherComorbidities] = useState('');
+  const [other_symptoms, setOtherSymptoms] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,7 +99,9 @@ const PacientNew = ({ history }) => {
           symptoms: currentSymptoms.map((s) => ({ name: s })),
           situation: currentSituations.join(),
           notification_date: moment(report.notification_date, 'DD/MM/YYYY').format('YYYY-MM-DD'),
-          symptoms_start_date: moment(report.symptoms_start_date, 'DD/MM/YYYY').format('YYYY-MM-DD')
+          symptoms_start_date: moment(report.symptoms_start_date, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+          other_comorbidities: enableOtherComorbidity && other_comorbidities ? other_comorbidities : null,
+          other_symptoms: enableOtherSymptom && other_symptoms ? other_symptoms : null,
         }
       };
       try {
@@ -136,9 +140,11 @@ const PacientNew = ({ history }) => {
       const newArr = [...currentComorbidities];
       newArr.push(value);
       setCurrentComorbidities(newArr);
+      if (value === 'Outros') setEnableOtherComorbidity(true);
     } else {
       const newArr = currentComorbidities.filter((v) => v !== value);
       setCurrentComorbidities(newArr);
+      if (value === 'Outros') setEnableOtherComorbidity(false);
     }
   };
 
@@ -147,9 +153,11 @@ const PacientNew = ({ history }) => {
       const newArr = [...currentSymptoms];
       newArr.push(value);
       setCurrentSymptons(newArr);
+      if (value === 'Outros') setEnableOtherSymptom(true);
     } else {
       const newArr = currentSymptoms.filter((v) => v !== value);
       setCurrentSymptons(newArr);
+      if (value === 'Outros') setEnableOtherSymptom(false);
     }
   };
 
@@ -357,7 +365,11 @@ const PacientNew = ({ history }) => {
                   </div>
                 </div>
                 <div className="field column">
-                  <label className="label">Data de notificação*</label>
+                  <label className="label">
+                    Data de
+                    {report.new_report ? 'notificação' : 'acompanhamento'}
+                    *
+                  </label>
                   <div className="control">
                     <InputMask
                       mask="99/99/9999"
@@ -474,6 +486,14 @@ const PacientNew = ({ history }) => {
                       <button key={comorbidity} type="button" className={`choice ${currentComorbidities.includes(comorbidity) ? 'active' : null}`} onClick={() => handleComorbidity(comorbidity)}>{comorbidity}</button>
                     ))}
                   </div>
+                  {enableOtherComorbidity && (
+                    <div className="field column">
+                      <label className="label">Outras comorbidades</label>
+                      <div className="control">
+                        <input className="input" type="text" value={other_comorbidities} onChange={(e) => setOtherComorbidities(e.target.value)} disabled={loading} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="columns">
@@ -484,6 +504,14 @@ const PacientNew = ({ history }) => {
                       <button key={symptom} type="button" className={`choice ${currentSymptoms.includes(symptom) ? 'active' : null}`} onClick={() => handleSymptom(symptom)}>{symptom}</button>
                     ))}
                   </div>
+                  {enableOtherSymptom && (
+                    <div className="field column">
+                      <label className="label">Outros sintomas</label>
+                      <div className="control">
+                        <input className="input" type="text" value={other_symptoms} onChange={(e) => setOtherSymptoms(e.target.value)} disabled={loading} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
