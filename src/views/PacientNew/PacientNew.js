@@ -20,7 +20,7 @@ const PacientNew = ({ history }) => {
   const [error, setError] = useState(null);
 
   const [cpf, setCPF] = useState(null);
-  const [pacientName, setPacientName] = useState(null);
+  const [patientName, setPatientName] = useState(null);
   const [mother_name, setMotherName] = useState(null);
   const [sex, setSex] = useState('');
   const [sex_orientation, setSexOrientation] = useState(null);
@@ -54,7 +54,7 @@ const PacientNew = ({ history }) => {
     setError(null);
     if (
       !cpf
-      || !pacientName
+      || !patientName
       || !sex
       || !phone_number
       || !birth_date
@@ -84,7 +84,7 @@ const PacientNew = ({ history }) => {
     } else {
       const pacient = {
         cpf,
-        name: pacientName,
+        name: patientName,
         mother_name: mother_name || null,
         sex,
         sex_orientation: sex_orientation || null,
@@ -179,7 +179,7 @@ const PacientNew = ({ history }) => {
               <div className="field column">
                 <label className="label">Nome do paciente*</label>
                 <div className="control">
-                  <input className="input" type="text" value={pacientName} onChange={(e) => setPacientName(e.target.value)} disabled={loading} />
+                  <input className="input" type="text" value={patientName} onChange={(e) => setPatientName(e.target.value)} disabled={loading} />
                 </div>
               </div>
               <div className="field column">

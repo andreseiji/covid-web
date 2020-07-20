@@ -16,24 +16,34 @@
   
   .filters {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
 
-    .field {
-      display: flex;
-      justify-content: flex-end;
-      flex: 1;
+    .columns {
+      margin-top: 16px;
+      align-items: flex-end;
     }
 
-    .field-label {
+    .filters-content {
       display: flex;
-      align-items: center;
-      justify-content: flex-end;
-    }
+      justify-content: space-between;
 
-    .field-body {
-      display: flex;
-      align-items: center;
-      flex-grow: 0;
+      .field {
+        display: flex;
+        justify-content: flex-end;
+        flex: 1;
+      }
+  
+      .field-label {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+  
+      .field-body {
+        display: flex;
+        align-items: center;
+        flex-grow: 0;
+      }
     }
   }
 }

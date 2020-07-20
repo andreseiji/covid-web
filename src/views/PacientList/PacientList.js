@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter, useLocation, Link } from 'react-router-dom';
+import InputMask from 'react-input-mask';
 
 import * as moment from 'moment';
 
+import { referenceUnits } from 'data/enums';
 import api from 'services/api';
 
 import Header from 'components/Header/Header';
@@ -18,6 +20,11 @@ const PacientList = ({ history }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [orderBy, setOrderBy] = useState('notification_date');
+  const [cpf, setCPF] = useState('');
+  const [notificationDate, setNotificationDate] = useState('');
+  const [patientName, setPatientName] = useState('');
+  const [referenceUnit, setReferenceUnit] = useState('');
+  const [symptomsStartDate, setSymptomsStartDate] = useState('');
 
   const page_size = 50;
 
@@ -29,12 +36,98 @@ const PacientList = ({ history }) => {
     return Math.floor(nPacients / page_size) + carry;
   };
 
+  const handleUrlFilters = async () => {
+    const cpfParam = query.get('cpf');
+    if (cpfParam) {
+      setCPF(cpfParam);
+    }
+    const notificationDateParam = query.get('notificationDate');
+    if (notificationDateParam) {
+      setNotificationDate(notificationDateParam);
+    }
+    const nameParam = query.get('name');
+    if (nameParam) {
+      setPatientName(nameParam);
+    }
+    const referenceUnitParam = query.get('referenceUnit');
+    if (referenceUnitParam) {
+      setReferenceUnit(referenceUnitParam);
+    }
+    const symptomsStartDateParam = query.get('symptomsStartDate');
+    if (symptomsStartDateParam) {
+      setSymptomsStartDate(symptomsStartDateParam);
+    }
+  };
+
+  const getFilters = async () => {
+    let filters = {};
+    await handleUrlFilters();
+    if (cpf) {
+      filters = { ...filters, cpf };
+    }
+    if (notificationDate) {
+      filters = { ...filters, notification_date: moment(notificationDate, 'YYYY-MM-DD').format('DD/MM/YYYY') };
+    }
+    if (patientName) {
+      filters = { ...filters, name: patientName };
+    }
+    if (referenceUnit) {
+      filters = { ...filters, reference_unit: referenceUnit };
+    }
+    if (symptomsStartDate) {
+      filters = { ...filters, symptoms_start_date: moment(symptomsStartDate, 'YYYY-MM-DD').format('DD/MM/YYYY') };
+    }
+    if (Object.entries(filters).length === 0) {
+      return null;
+    }
+    return filters;
+  };
+
+  const setFilters = async () => {
+    let filters = '';
+    if (cpf) {
+      filters = `cpf=${cpf}`;
+    }
+    if (notificationDate) {
+      filters = `notificationDate=${moment(notificationDate, 'DD/MM/YYYY').format('YYYY-MM-DD')}`;
+    }
+    if (patientName) {
+      filters = `name=${patientName}`;
+    }
+    if (referenceUnit) {
+      filters = `referenceUnit=${referenceUnit}`;
+    }
+    if (symptomsStartDate) {
+      filters = `symptomsStartDate=${moment(symptomsStartDate, 'DD/MM/YYYY').format('YYYY-MM-DD')}`;
+    }
+    if (Object.entries(filters).length === 0) {
+      return null;
+    }
+    const page = query.get('page');
+    if (page) {
+      filters = `page=${page}`;
+    }
+    const order = query.get('orderBy');
+    if (order) {
+      filters = `orderBy=${order}`;
+    }
+    console.log(filters);
+    history.replace({
+      pathname: '/',
+      search: filters ? `?${filters}` : ''
+    });
+    return 0;
+  };
+
   const fetchPacients = async (page, order) => {
     try {
       setLoading(true);
       const res = await api.post('/pacient/list', {
         list: {
-          page_index: page || 1, page_size, order_by: order || 'notification_date'
+          page_index: page || 1,
+          page_size,
+          order_by: order || 'notification_date',
+          filter_by: await getFilters()
         }
       });
       setPacients(res.data.pacients);
@@ -51,6 +144,12 @@ const PacientList = ({ history }) => {
       }
       setLoading(false);
     }
+  };
+
+  const submitFilters = async (e) => {
+    e.preventDefault();
+    await setFilters();
+    await fetchPacients(currentPage, orderBy);
   };
 
   useEffect(() => {
@@ -110,26 +209,74 @@ const PacientList = ({ history }) => {
       {totalPacients && (
         <div id="pacient-list" className="container">
           <div className="filters card">
-            <div>
-              <h3 className="title is-3">Pacientes</h3>
-              <h6 className="title is-6">
-                {`Mostrando pacientes ${getInitialPacient()} - ${getPagePacient()} de ${totalPacients}`}
-              </h6>
-            </div>
-            <div className="field is-horizontal">
-              <div className="field-label">Ordenar por:</div>
-              <div className="field-body">
-                <div className="select">
-                  <select value={orderBy} onChange={(e) => handleOrderBy(e.target.value)}>
-                    <option value="notification_date">Data de Notificação</option>
-                    <option value="symptoms_start_date">Início dos Sintomas</option>
-                    <option value="cpf">CPF</option>
-                    <option value="name">Nome</option>
-                    <option value="reference_unit">Unidade de Referência</option>
-                  </select>
+            <div className="filters-content">
+              <div>
+                <h3 className="title is-3">Pacientes</h3>
+                <h6 className="title is-6">
+                  {`Mostrando pacientes ${getInitialPacient()} - ${getPagePacient()} de ${totalPacients}`}
+                </h6>
+              </div>
+              <div className="field is-horizontal">
+                <div className="field-label">Ordenar por:</div>
+                <div className="field-body">
+                  <div className="select">
+                    <select value={orderBy} onChange={(e) => handleOrderBy(e.target.value)}>
+                      <option value="notification_date">Data de Notificação</option>
+                      <option value="symptoms_start_date">Início dos Sintomas</option>
+                      <option value="cpf">CPF</option>
+                      <option value="name">Nome</option>
+                      <option value="reference_unit">Unidade de Referência</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
+            <form className="columns" onSubmit={(e) => submitFilters(e)}>
+              <div className="field column">
+                <label className="label">CPF</label>
+                <div className="control">
+                  <InputMask mask="999.999.999-99" className="input" type="text" value={cpf} onChange={(e) => setCPF(e.target.value)} disabled={loading} />
+                </div>
+              </div>
+              <div className="field column">
+                <label className="label">Nome</label>
+                <div className="control">
+                  <input className="input" type="text" value={patientName} onChange={(e) => setPatientName(e.target.value)} disabled={loading} />
+                </div>
+              </div>
+              <div className="field column">
+                <label className="label">Notificação</label>
+                <div className="control">
+                  <InputMask mask="99/99/9999" className="input" type="text" value={notificationDate} onChange={(e) => setNotificationDate(e.target.value)} disabled={loading} />
+                </div>
+              </div>
+              <div className="field column">
+                <label className="label">Início</label>
+                <div className="control">
+                  <InputMask mask="99/99/9999" className="input" type="text" value={symptomsStartDate} onChange={(e) => setSymptomsStartDate(e.target.value)} disabled={loading} />
+                </div>
+              </div>
+              <div className="field column">
+                <label className="label">Unidade</label>
+                <div className="control">
+                  <div className="select">
+                    <select
+                      value={referenceUnit}
+                      onChange={(e) => setReferenceUnit(e.target.value)}
+                      disabled={loading}
+                    >
+                      <option value="">Selecione...</option>
+                      {referenceUnits.map((item) => <option key={item} value={item}>{item}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="field column" style={{ marginBottom: 12 }}>
+                <button type="submit" className="button is-success" disabled={loading}>
+                  Filtrar
+                </button>
+              </div>
+            </form>
           </div>
           <div className="pacient-list card">
             {error && (
@@ -167,29 +314,6 @@ const PacientList = ({ history }) => {
           <nav className="pagination" role="navigation" aria-label="pagination">
             <button type="button" className="pagination-previous" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>Página anterior</button>
             <button type="button" className="pagination-next" disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>Próxima página</button>
-            <ul className="pagination-list">
-              {/* <li>
-                <button type="button" className="pagination-link">1</button>
-              </li>
-              <li>
-                <span className="pagination-ellipsis">&hellip;</span>
-              </li>
-              <li>
-                <button type="button" className="pagination-link">45</button>
-              </li>
-              <li>
-                <button type="button" className="pagination-link is-current">46</button>
-              </li>
-              <li>
-                <button type="button" className="pagination-link">47</button>
-              </li>
-              <li>
-                <span className="pagination-ellipsis">&hellip;</span>
-              </li>
-              <li>
-                <button type="button" className="pagination-link">86</button>
-              </li> */}
-            </ul>
           </nav>
         </div>
       )}

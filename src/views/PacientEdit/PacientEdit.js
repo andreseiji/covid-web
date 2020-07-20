@@ -22,7 +22,7 @@ const PacientEdit = ({ history }) => {
   const [error, setError] = useState(null);
 
   const [cpf, setCPF] = useState(null);
-  const [pacientName, setPacientName] = useState(null);
+  const [patientName, setPatientName] = useState(null);
   const [mother_name, setMotherName] = useState(null);
   const [sex, setSex] = useState('');
   const [sex_orientation, setSexOrientation] = useState(null);
@@ -37,7 +37,7 @@ const PacientEdit = ({ history }) => {
         setLoading(true);
         const res = await api.get(`/pacient/${id}`);
         setCPF(res.data.cpf);
-        setPacientName(res.data.name);
+        setPatientName(res.data.name);
         setMotherName(res.data.mother_name);
         setSex(res.data.sex);
         setSexOrientation(res.data.sex_orientation === 'null' ? null : res.data.sex_orientation);
@@ -87,7 +87,7 @@ const PacientEdit = ({ history }) => {
     setError(null);
     if (
       !cpf
-      || !pacientName
+      || !patientName
       || !sex
       || !phone_number
       || !birth_date
@@ -103,7 +103,7 @@ const PacientEdit = ({ history }) => {
     } else {
       const pacient = {
         cpf,
-        name: pacientName,
+        name: patientName,
         mother_name: mother_name || null,
         sex,
         sex_orientation: sex_orientation || null,
@@ -272,7 +272,7 @@ const PacientEdit = ({ history }) => {
               <div className="field column">
                 <label className="label">Nome do paciente*</label>
                 <div className="control">
-                  <input className="input" type="text" value={pacientName} onChange={(e) => setPacientName(e.target.value)} disabled={loading} />
+                  <input className="input" type="text" value={patientName} onChange={(e) => setPatientName(e.target.value)} disabled={loading} />
                 </div>
               </div>
               <div className="field column">
