@@ -12,57 +12,63 @@ import Loading from 'components/Loading/Loading';
 
 import './PacientList.scss';
 
+  const useQuery = () => new URLSearchParams(useLocation().search);
+
 const PacientList = ({ history }) => {
-  const [loading, setLoading] = useState(true);
+  const query = useQuery();
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pacients, setPacients] = useState([]);
   const [totalPacients, setTotalPacients] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [orderBy, setOrderBy] = useState('notification_date');
+
   const [cpf, setCPF] = useState('');
-  const [notificationDate, setNotificationDate] = useState('');
   const [patientName, setPatientName] = useState('');
-  const [referenceUnit, setReferenceUnit] = useState('');
+  const [notificationDate, setNotificationDate] = useState('');
   const [symptomsStartDate, setSymptomsStartDate] = useState('');
+  const [referenceUnit, setReferenceUnit] = useState('');
 
   const page_size = 50;
-
-  const useQuery = () => new URLSearchParams(useLocation().search);
-  const query = useQuery();
-
+  
   const calcTotalPages = (nPacients) => {
     const carry = nPacients % page_size === 0 ? 0 : 1;
     return Math.floor(nPacients / page_size) + carry;
   };
 
-  const handleUrlFilters = async () => {
-    const cpfParam = query.get('cpf');
-    if (cpfParam) {
-      setCPF(cpfParam);
-    }
-    const notificationDateParam = query.get('notificationDate');
-    if (notificationDateParam) {
-      setNotificationDate(notificationDateParam);
-    }
-    const nameParam = query.get('name');
-    if (nameParam) {
-      setPatientName(nameParam);
-    }
-    const referenceUnitParam = query.get('referenceUnit');
-    if (referenceUnitParam) {
-      setReferenceUnit(referenceUnitParam);
-    }
-    const symptomsStartDateParam = query.get('symptomsStartDate');
-    if (symptomsStartDateParam) {
-      setSymptomsStartDate(symptomsStartDateParam);
+  const fetchPacients = async (page, order, filters) => {
+    try {
+      setLoading(true);
+      const res = await api.post('/pacient/list', {
+        list: {
+          page_index: page || 1,
+          page_size,
+          order_by: order || 'notification_date',
+          filter_by: filters
+        }
+      });
+      setPacients(res.data.pacients);
+      setTotalPacients(res.data.total_pacients);
+      setTotalPages(calcTotalPages(res.data.total_pacients));
+      setLoading(false);
+    } catch (err) {
+      if (err && err.message && err.message === 'Network Error') {
+        setError(err.message);
+      } else if (err && err.response && err.response.error) {
+        setError(err.response.error);
+      } else {
+        setError('Erro ao obter lista de pacientes');
+      }
+      setLoading(false);
     }
   };
 
-  const getFilters = async () => {
+  const handleFilters = () => {
     let filters = {};
-    await handleUrlFilters();
     if (cpf) {
+      console.log('entrou')
       filters = { ...filters, cpf };
     }
     if (notificationDate) {
@@ -78,9 +84,41 @@ const PacientList = ({ history }) => {
       filters = { ...filters, symptoms_start_date: moment(symptomsStartDate, 'YYYY-MM-DD').format('DD/MM/YYYY') };
     }
     if (Object.entries(filters).length === 0) {
-      return null;
+      fetchPacients(currentPage, orderBy, null);
     }
-    return filters;
+    else {
+      fetchPacients(currentPage, orderBy, filters);
+    }
+  };
+
+  const getFilters = () => {
+    let filters = {};
+    if (query.get('cpf')) {
+      filters = { ...filters, cpf: query.get('cpf') };
+      setCPF(query.get('cpf'));
+    }
+    if (query.get('notificationDate')) {
+      filters = { ...filters, notification_date: moment(query.get('notificationDate'), 'YYYY-MM-DD').format('DD/MM/YYYY') };
+      setNotificationDate(query.get('notificationDate'));
+    }
+    if (query.get('name')) {
+      filters = { ...filters, name: query.get('name') };
+      setPatientName(query.get('name'));
+    }
+    if (query.get('referenceUnit')) {
+      filters = { ...filters, reference_unit: query.get('referenceUnit') };
+      setReferenceUnit(query.get('referenceUnit'));
+    }
+    if (query.get('symptomsStartDate')) {
+      filters = { ...filters, symptoms_start_date: moment(query.get('symptomsStartDate'), 'YYYY-MM-DD').format('DD/MM/YYYY') };
+      setSymptomsStartDate(query.get('symptomsStartDate'));
+    }
+    if (Object.entries(filters).length === 0) {
+      fetchPacients(currentPage, orderBy, null);
+    }
+    else {
+      fetchPacients(currentPage, orderBy, filters);
+    }
   };
 
   const setFilters = async () => {
@@ -100,9 +138,6 @@ const PacientList = ({ history }) => {
     if (symptomsStartDate) {
       filters = `symptomsStartDate=${moment(symptomsStartDate, 'DD/MM/YYYY').format('YYYY-MM-DD')}`;
     }
-    if (Object.entries(filters).length === 0) {
-      return null;
-    }
     const page = query.get('page');
     if (page) {
       filters = `page=${page}`;
@@ -111,7 +146,6 @@ const PacientList = ({ history }) => {
     if (order) {
       filters = `orderBy=${order}`;
     }
-    console.log(filters);
     history.replace({
       pathname: '/',
       search: filters ? `?${filters}` : ''
@@ -119,49 +153,14 @@ const PacientList = ({ history }) => {
     return 0;
   };
 
-  const fetchPacients = async (page, order) => {
-    try {
-      setLoading(true);
-      const res = await api.post('/pacient/list', {
-        list: {
-          page_index: page || 1,
-          page_size,
-          order_by: order || 'notification_date',
-          filter_by: await getFilters()
-        }
-      });
-      setPacients(res.data.pacients);
-      setTotalPacients(res.data.total_pacients);
-      setTotalPages(calcTotalPages(res.data.total_pacients));
-      setLoading(false);
-    } catch (err) {
-      if (err && err.message && err.message === 'Network Error') {
-        setError(err.message);
-      } else if (err && err.response && err.response.error) {
-        setError(err.response.error);
-      } else {
-        setError('Erro ao obter lista de pacientes');
-      }
-      setLoading(false);
-    }
-  };
-
   const submitFilters = async (e) => {
     e.preventDefault();
     await setFilters();
-    await fetchPacients(currentPage, orderBy);
+    await handleFilters();
   };
 
   useEffect(() => {
-    const page = query.get('page');
-    if (page) {
-      setCurrentPage(parseInt(page, 10));
-    }
-    const order = query.get('orderBy');
-    if (order) {
-      setOrderBy(order);
-    }
-    fetchPacients(page, order);
+    getFilters();
     // eslint-disable-next-line
   }, []);
 
