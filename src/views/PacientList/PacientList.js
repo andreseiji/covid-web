@@ -12,7 +12,7 @@ import Loading from 'components/Loading/Loading';
 
 import './PacientList.scss';
 
-  const useQuery = () => new URLSearchParams(useLocation().search);
+const useQuery = () => new URLSearchParams(useLocation().search);
 
 const PacientList = ({ history }) => {
   const query = useQuery();
@@ -32,7 +32,7 @@ const PacientList = ({ history }) => {
   const [referenceUnit, setReferenceUnit] = useState('');
 
   const page_size = 50;
-  
+
   const calcTotalPages = (nPacients) => {
     const carry = nPacients % page_size === 0 ? 0 : 1;
     return Math.floor(nPacients / page_size) + carry;
@@ -68,25 +68,23 @@ const PacientList = ({ history }) => {
   const handleFilters = () => {
     let filters = {};
     if (cpf) {
-      console.log('entrou')
       filters = { ...filters, cpf };
-    }
-    if (notificationDate) {
-      filters = { ...filters, notification_date: moment(notificationDate, 'YYYY-MM-DD').format('DD/MM/YYYY') };
     }
     if (patientName) {
       filters = { ...filters, name: patientName };
     }
+    if (notificationDate) {
+      filters = { ...filters, notification_date: moment(notificationDate, 'DD/MM/YYYY').format('YYYY-MM-DD') };
+    }
+    if (symptomsStartDate) {
+      filters = { ...filters, symptoms_start_date: moment(symptomsStartDate, 'DD/MM/YYYY').format('YYYY-MM-DD') };
+    }
     if (referenceUnit) {
       filters = { ...filters, reference_unit: referenceUnit };
     }
-    if (symptomsStartDate) {
-      filters = { ...filters, symptoms_start_date: moment(symptomsStartDate, 'YYYY-MM-DD').format('DD/MM/YYYY') };
-    }
     if (Object.entries(filters).length === 0) {
       fetchPacients(currentPage, orderBy, null);
-    }
-    else {
+    } else {
       fetchPacients(currentPage, orderBy, filters);
     }
   };
@@ -115,8 +113,7 @@ const PacientList = ({ history }) => {
     }
     if (Object.entries(filters).length === 0) {
       fetchPacients(currentPage, orderBy, null);
-    }
-    else {
+    } else {
       fetchPacients(currentPage, orderBy, filters);
     }
   };
